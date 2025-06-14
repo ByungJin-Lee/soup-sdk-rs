@@ -7,8 +7,11 @@ use crate::{
         commands::MessageType,
         constants::message_codes,
         formatter::ChatFormatter,
-        parser::{RawMessage, parse_message},
-        util::parse_chat_event,
+        parser::{
+            chat::parse_chat_event,
+            exit::parse_exit_event,
+            raw::{RawMessage, parse_message},
+        },
     },
 };
 
@@ -54,6 +57,7 @@ impl MessageHandler {
         let res = match message.code {
             message_codes::CONNECT => self.handle_connect(message),
             message_codes::CHAT => self.handle_chat(message),
+            message_codes::EXIT => self.handle_exit(message),
             _ => {
                 // 다른 메시지 코드 처리
                 self.broadcast(Event::Unknown(message.code));
@@ -67,6 +71,13 @@ impl MessageHandler {
 
     fn handle_chat(&self, message: RawMessage) -> Option<Vec<u8>> {
         self.broadcast(Event::Chat(parse_chat_event(message)));
+        None
+    }
+
+    fn handle_exit(&self, message: RawMessage) -> Option<Vec<u8>> {
+        if let Some(e) = parse_exit_event(message) {
+            self.broadcast(Event::Exit(e));
+        }
         None
     }
 

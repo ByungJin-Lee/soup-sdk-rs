@@ -85,6 +85,7 @@ pub struct DonationEvent {
     pub to: String,
     pub amount: u64,                   // 후원 금액
     pub fan_club_ordinal: Option<u32>, // 팬클럽 순번
+    pub donation_type: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -121,6 +122,6 @@ pub struct ViewerCountEvent {
 pub struct UserEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
-    pub user_id: String,
-    pub username: String,
+    #[serde(flatten)]
+    pub user: User,
 }

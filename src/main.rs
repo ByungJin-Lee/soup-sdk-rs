@@ -53,7 +53,10 @@ fn handle_event(event: Event) {
             // println!("[Incoming] {}", String::from_utf8_lossy(&raw));
         }
         Event::Chat(chat) => {
-            print_chat(chat);
+            // print_chat(chat);
+        }
+        Event::Exit(v) => {
+            println!("{:?}", v)
         }
         _ => {
             // println!("[Incoming] {:?}", event);
@@ -63,12 +66,11 @@ fn handle_event(event: Event) {
 
 fn print_chat(e: ChatEvent) {
     println!(
-        "{} 티어:{} 구독:{} 팬:{} 열혈:{}\n{}\n",
+        "{} 티어:{} 팬:{} 열혈:{}\n{}\n",
         e.user.label,
-        e.user.follow,
-        e.user.is_subscriber,
-        e.user.is_fan,
-        e.user.is_top_fan,
+        e.user.status.follow,
+        e.user.status.is_fan,
+        e.user.status.is_top_fan,
         e.comment
     )
 }
