@@ -1,5 +1,5 @@
 use serde::Deserialize;
-
+use serde_this_or_that::as_u64;
 // --- LiveDetail 관련 구조체들 ---
 
 #[derive(Debug, Clone, Deserialize)]
@@ -14,8 +14,8 @@ pub struct ChannelInfo {
     pub result: i32, // 1이면 방송 중, 0이면 방송 중 아님
     #[serde(rename = "CHDOMAIN")]
     pub ch_domain: String,
-    #[serde(rename = "CHPT")]
-    pub ch_pt: u32,
+    #[serde(rename = "CHPT", deserialize_with = "as_u64")]
+    pub ch_pt: u64,
     #[serde(rename = "CHATNO")]
     pub chat_no: String,
 }

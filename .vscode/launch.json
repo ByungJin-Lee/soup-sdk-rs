@@ -1,0 +1,64 @@
+{
+  // IntelliSense를 사용하여 가능한 특성에 대해 알아보세요.
+  // 기존 특성에 대한 설명을 보려면 가리킵니다.
+  // 자세한 내용을 보려면 https://go.microsoft.com/fwlink/?linkid=830387을(를) 방문하세요.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in library 'soop_chat_sdk'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--lib",
+          "--package=soop-chat-sdk"
+        ],
+        "filter": {
+          "name": "soop_chat_sdk",
+          "kind": "lib"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'soop-chat-sdk'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=soop-chat-sdk",
+          "--package=soop-chat-sdk"
+        ],
+        "filter": {
+          "name": "soop-chat-sdk",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'soop-chat-sdk'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=soop-chat-sdk",
+          "--package=soop-chat-sdk"
+        ],
+        "filter": {
+          "name": "soop-chat-sdk",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

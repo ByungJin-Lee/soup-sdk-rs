@@ -1,0 +1,71 @@
+use tokio::sync::broadcast;
+
+use crate::{
+    Error, Result,
+    chat::{
+        Event,
+        commands::MessageType,
+        constants::message_codes,
+        formatter::ChatFormatter,
+        parser::{ChatMessage, parse_message},
+    },
+};
+
+pub struct MessageHandler {
+    pub formatter: ChatFormatter,
+    pub event_tx: broadcast::Sender<Event>,
+}
+
+impl MessageHandler {
+    pub fn new(formatter: &ChatFormatter, event_tx: broadcast::Sender<Event>) -> Self {
+        Self {
+            formatter: formatter.clone(),
+            event_tx,
+        }
+    }
+    /// 메시지를 처리하고 이벤트를 전송합니다.
+    pub fn handle(&self, raw: Vec<u8>) -> Result<Option<Vec<u8>>> {
+        // Raw 메시지 처리
+        self.broadcast(Event::Raw(raw.clone()))?;
+        // 메시지 파싱
+        let ret = match parse_message(&raw) {
+            Ok(message) => self.handle_message(message),
+            Err(_) => {
+                // 파싱 오류 처리
+                // self.broadcast(Event::Error(e))?;
+                None
+            }
+        };
+
+        Ok(ret)
+    }
+
+    fn broadcast(&self, event: Event) -> Result<()> {
+        self.event_tx
+            .send(event)
+            .map_err(|_| Error::InternalChannel("Failed to send event".into()))?;
+        Ok(())
+    }
+
+    fn handle_message(&self, message: ChatMessage) -> Option<Vec<u8>> {
+        // 메시지 처리 로직을 여기에 구현합니다.
+        // 예를 들어, raw 메시지를 파싱하고 필요한 이벤트를 생성할 수 있습니다.
+        let res = match message.code {
+            message_codes::CONNECT => self.handle_connect(message),
+            _ => {
+                // 다른 메시지 코드 처리
+                self.broadcast(Event::Unknown(message.code));
+                None
+            }
+        };
+
+        // 메시지에 대한 응답이 필요한 경우, Vec<u8>를 반환합니다.
+        res
+    }
+
+    // CONNECT 메시지 처리 -> JOIN 메시지 전송
+    fn handle_connect(&self, _: ChatMessage) -> Option<Vec<u8>> {
+        let ret = self.formatter.format_message(MessageType::JOIN);
+        Some(ret)
+    }
+}

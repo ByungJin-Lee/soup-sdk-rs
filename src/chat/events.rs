@@ -1,6 +1,8 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
+use crate::chat::constants::message_codes::MessageCode;
+
 // --- 채팅 이벤트 ---
 #[derive(Debug, Clone, Serialize)]
 #[serde(tag = "type", content = "payload")]
@@ -30,8 +32,10 @@ pub enum Event {
     Notification(NotificationEvent),
     /// 현재 시청자 수가 업데이트되었을 때.
     ViewerCountUpdate(ViewerCountEvent),
-    // 직접 처리(위에서 열거된 이벤트가 아닌 경우)
-    RawMessage(String),
+    /// 알 수 없는 이벤트 타입
+    Unknown(MessageCode),
+    /// 직접 처리
+    Raw(Vec<u8>), // 원시 데이터로 처리할 수 있는 이벤트
 }
 
 #[derive(Debug, Clone, Serialize)]

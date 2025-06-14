@@ -26,6 +26,9 @@ pub enum Error {
 
     #[error("아직 구현되지 않은 기능입니다.")]
     NotImplemented,
+
+    #[error("이미 시작된 연결입니다.")]
+    AlreadyStarted,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

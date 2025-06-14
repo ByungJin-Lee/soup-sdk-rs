@@ -20,14 +20,15 @@ impl SoopHttpClient {
         // x-www-form-urlencoded 형식의 본문을 만듭니다.
         let params = [("bid", streamer_id)];
 
-        let response = self
+        let request = self
             .client
             .post(PLAYER_LIVE_API_URL)
             .query(&[("bjid", streamer_id)]) // URL 쿼리 파라미터 추가
-            .form(&params) // form-urlencoded 본문 추가
-            .send()
-            .await
-            .map_err(Error::Request)?; // reqwest 에러를 우리 에러 타입으로 변환
+            .header("Content-Type", "application/x-www-form-urlencoded") // 헤더 설정
+            .header("User-Agent", "Mozilla/5.0 (compatible; SoopClient/1.0)") // User-Agent 헤더 설정
+            .form(&params); // form-urlencoded 본문 추가
+
+        let response = request.send().await?;
 
         if !response.status().is_success() {
             return Err(Error::Request(response.error_for_status().unwrap_err()));
