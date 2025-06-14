@@ -6,6 +6,8 @@ mod formatter;
 pub mod message;
 pub mod options;
 mod parser;
+mod types;
+mod util;
 mod verification;
 
 pub use connection::SoopChatConnection;

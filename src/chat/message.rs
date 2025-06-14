@@ -7,7 +7,8 @@ use crate::{
         commands::MessageType,
         constants::message_codes,
         formatter::ChatFormatter,
-        parser::{ChatMessage, parse_message},
+        parser::{RawMessage, parse_message},
+        util::parse_chat_event,
     },
 };
 
@@ -47,11 +48,12 @@ impl MessageHandler {
         Ok(())
     }
 
-    fn handle_message(&self, message: ChatMessage) -> Option<Vec<u8>> {
+    fn handle_message(&self, message: RawMessage) -> Option<Vec<u8>> {
         // 메시지 처리 로직을 여기에 구현합니다.
         // 예를 들어, raw 메시지를 파싱하고 필요한 이벤트를 생성할 수 있습니다.
         let res = match message.code {
             message_codes::CONNECT => self.handle_connect(message),
+            message_codes::CHAT => self.handle_chat(message),
             _ => {
                 // 다른 메시지 코드 처리
                 self.broadcast(Event::Unknown(message.code));
@@ -63,8 +65,13 @@ impl MessageHandler {
         res
     }
 
+    fn handle_chat(&self, message: RawMessage) -> Option<Vec<u8>> {
+        self.broadcast(Event::Chat(parse_chat_event(message)));
+        None
+    }
+
     // CONNECT 메시지 처리 -> JOIN 메시지 전송
-    fn handle_connect(&self, _: ChatMessage) -> Option<Vec<u8>> {
+    fn handle_connect(&self, _: RawMessage) -> Option<Vec<u8>> {
         let ret = self.formatter.format_message(MessageType::JOIN);
         Some(ret)
     }

@@ -1,10 +1,13 @@
+use chrono::{DateTime, Utc};
+
 use crate::chat::constants::{SEPARATOR_U8, message_codes::MessageCode};
 
 #[derive(Debug)]
-pub struct ChatMessage {
+pub struct RawMessage {
     pub code: MessageCode,
     pub red_code: u32,
     pub body: Vec<String>,
+    pub received_time: DateTime<Utc>,
 }
 
 struct MessageHeader {
@@ -12,17 +15,20 @@ struct MessageHeader {
     ret_code: u32,
 }
 
-pub fn parse_message(data: &[u8]) -> Result<ChatMessage, String> {
+pub fn parse_message(data: &[u8]) -> Result<RawMessage, String> {
+    let now = Utc::now();
+
     let header_bytes = &data[0..14];
 
     let header = parse_header(header_bytes)?;
 
     let body = &data[14..];
 
-    Ok(ChatMessage {
+    Ok(RawMessage {
         code: header.code,
         red_code: header.ret_code,
         body: parse_body(body),
+        received_time: now,
     })
 }
 

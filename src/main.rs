@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use soop_chat_sdk::{
     SoopHttpClient,
-    chat::{Event, SoopChatConnection, options::SoopChatOptions},
+    chat::{ChatEvent, Event, SoopChatConnection, options::SoopChatOptions},
 };
 
 #[tokio::main]
@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "danchu17".to_string(),
+        streamer_id: "collet11".to_string(),
     };
 
     // --- 2. 초기화 (생성) ---
@@ -50,10 +50,25 @@ async fn main() -> anyhow::Result<()> {
 fn handle_event(event: Event) {
     match event {
         Event::Raw(raw) => {
-            println!("[Incoming] {}", String::from_utf8_lossy(&raw));
+            // println!("[Incoming] {}", String::from_utf8_lossy(&raw));
+        }
+        Event::Chat(chat) => {
+            print_chat(chat);
         }
         _ => {
-            println!("[Incoming] {:?}", event);
+            // println!("[Incoming] {:?}", event);
         }
     }
+}
+
+fn print_chat(e: ChatEvent) {
+    println!(
+        "{} 티어:{} 구독:{} 팬:{} 열혈:{}\n{}\n",
+        e.user.label,
+        e.user.follow,
+        e.user.is_subscriber,
+        e.user.is_fan,
+        e.user.is_top_fan,
+        e.comment
+    )
 }

@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::chat::constants::message_codes::MessageCode;
+use crate::chat::{constants::message_codes::MessageCode, types::User};
 
 // --- 채팅 이벤트 ---
 #[derive(Debug, Clone, Serialize)]
@@ -72,9 +72,8 @@ pub struct RestoredEvent {
 pub struct ChatEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
-    pub user_id: String,
-    pub username: String,
     pub comment: String,
+    pub user: User,
 }
 
 #[derive(Debug, Clone, Serialize)]

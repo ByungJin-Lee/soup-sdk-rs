@@ -25,3 +25,23 @@ pub mod message_codes {
     pub const VIDEODONATION: MessageCode = 105;
     pub const VIEWER: MessageCode = 127;
 }
+
+pub mod chat_message_fields {
+    pub const CONTENT: usize = 0;
+    pub const USER_ID: usize = 1;
+    pub const USER_NICK: usize = 5;
+    pub const FLAGS: usize = 6;
+    pub const SUBSCRIBE: usize = 7;
+    pub const ACC_SUBSCRIBE: usize = 10;
+}
+
+pub mod user_flags {
+    pub const BJ: u32 = 1 << 2;
+    pub const GUEST: u32 = 1 << 4;
+    pub const FAN: u32 = 1 << 5;
+    pub const MANAGER: u32 = 1 << 8;
+    pub const TOP_FAN: u32 = 1 << 15;
+    pub const SUPPORTER: u32 = 1 << 20;
+    pub const FOLLOWER_TIER1: u32 = 1 << 18;
+    pub const FOLLOWER_TIER2: u32 = 1 << 19;
+}
