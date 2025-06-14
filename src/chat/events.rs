@@ -31,7 +31,7 @@ pub enum Event {
     /// 스트리머나 매니저가 보낸 공지사항 메시지.
     Notification(NotificationEvent),
     /// 현재 시청자 수가 업데이트되었을 때.
-    ViewerCountUpdate(ViewerCountEvent),
+    Join(SimplifiedUserEvent),
     /// 알 수 없는 이벤트 타입
     Unknown(MessageCode),
     /// 직접 처리
@@ -124,4 +124,11 @@ pub struct UserEvent {
     pub meta: EventMeta,
     #[serde(flatten)]
     pub user: User,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SimplifiedUserEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub user_id: String,
 }

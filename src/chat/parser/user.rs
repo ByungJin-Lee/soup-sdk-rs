@@ -18,10 +18,16 @@ pub fn parse_user_status(flag_str: &str) -> UserStatus {
 }
 
 fn parse_user_flags(flag_str: &str) -> UserFlags {
-    let flags: Vec<u32> = flag_str
-        .split("|")
-        .map(|val| val.parse::<u32>().unwrap())
-        .collect();
+    let flags_str: Vec<&str> = flag_str.split("|").collect();
+
+    let flags: Vec<u32> = if flags_str.len() == 2 {
+        flags_str
+            .iter()
+            .map(|val| val.parse::<u32>().unwrap())
+            .collect()
+    } else {
+        vec![0, 0].to_vec()
+    };
 
     return UserFlags {
         follow: flags[1],

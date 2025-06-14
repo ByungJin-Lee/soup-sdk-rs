@@ -16,7 +16,7 @@ pub enum MessageType {
     Notification,
     Emoticon,
     VideoDonation,
-    Viewer,
+    UserJOIN,
     Unknown,
 }
 
@@ -36,7 +36,7 @@ impl From<u32> for MessageType {
             message_codes::NOTIFICATION => Self::Notification,
             message_codes::EMOTICON => Self::Emoticon,
             message_codes::VIDEODONATION => Self::VideoDonation,
-            message_codes::VIEWER => Self::Viewer,
+            message_codes::USER_JOIN => Self::UserJOIN,
             // 알 수 없는 명령어는 Unknown으로 처리합니다.
             _ => Self::Unknown,
         }
@@ -59,7 +59,7 @@ impl MessageType {
             Self::Notification => message_codes::NOTIFICATION,
             Self::Emoticon => message_codes::EMOTICON,
             Self::VideoDonation => message_codes::VIDEODONATION,
-            Self::Viewer => message_codes::VIEWER,
+            Self::UserJOIN => message_codes::USER_JOIN,
             Self::Unknown => 0, // 알 수 없는 명령어는 0으로 처리
         }
     }

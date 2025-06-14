@@ -8,7 +8,7 @@ pub fn parse_exit_event(raw: RawMessage) -> Option<UserEvent> {
     let body = raw.body;
 
     // "1"인 경우는 특정되지 않은 이벤트
-    if body[0] == "1" {
+    if body[0] == "1" || body.len() < 6 {
         return None;
     }
 

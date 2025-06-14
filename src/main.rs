@@ -56,7 +56,10 @@ fn handle_event(event: Event) {
             // print_chat(chat);
         }
         Event::Exit(v) => {
-            println!("{:?}", v)
+            println!("E {}", v.user.id)
+        }
+        Event::Join(v) => {
+            println!("J {}", v.user_id)
         }
         _ => {
             // println!("[Incoming] {:?}", event);

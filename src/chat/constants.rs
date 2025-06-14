@@ -23,7 +23,7 @@ pub mod message_codes {
     pub const NOTIFICATION: MessageCode = 104;
     pub const EMOTICON: MessageCode = 109;
     pub const VIDEODONATION: MessageCode = 105;
-    pub const VIEWER: MessageCode = 127;
+    pub const USER_JOIN: MessageCode = 127;
 }
 
 pub mod chat_message_fields {
