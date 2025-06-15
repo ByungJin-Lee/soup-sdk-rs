@@ -21,7 +21,6 @@ impl ChatFormatter {
         let payload: String = match message_type {
             MessageType::Connect => self.format_connect_packet(),
             MessageType::JOIN => self.format_join_packet(),
-            MessageType::Ping => "".to_string(),
             _ => "".to_string(), // 다른 메시지 코드에 대한 기본값
         };
         return bundle(message_type, payload.as_bytes());

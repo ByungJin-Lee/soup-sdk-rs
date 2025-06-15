@@ -26,3 +26,18 @@ pub struct User {
     // 구독
     pub subscribe: Option<UserSubscribe>,
 }
+
+#[derive(Debug, Serialize, Clone)]
+pub enum ChatType {
+    Manager,
+    Common,
+    Emoticon,
+}
+
+#[derive(Debug, Serialize, Clone)]
+pub struct Emoticon {
+    pub id: String,
+    pub number: String,
+    pub ext: String,
+    pub version: String,
+}

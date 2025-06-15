@@ -1,19 +1,23 @@
-use tokio::sync::broadcast;
+use tokio::sync::{broadcast, mpsc};
 
 use crate::{
     Error, Result,
     chat::{
         Event,
-        commands::MessageType,
+        commands::{Command, MessageType},
         constants::message_codes,
         formatter::ChatFormatter,
         parser::{
             chat::{parse_chat_event, parse_manager_chat_event},
+            emoticon::parse_emoticon_event,
             exit::parse_exit_event,
             freeze::parse_freeze_event,
             join::parse_join_event,
+            kick::parse_kick_cancel_event,
             mute::parse_mute_event,
+            notification::parse_notification_event,
             raw::{RawMessage, parse_message},
+            slow::parse_slow_event,
         },
     },
 };
@@ -21,13 +25,19 @@ use crate::{
 pub struct MessageHandler {
     pub formatter: ChatFormatter,
     pub event_tx: broadcast::Sender<Event>,
+    pub command_tx: mpsc::Sender<Command>,
 }
 
 impl MessageHandler {
-    pub fn new(formatter: &ChatFormatter, event_tx: broadcast::Sender<Event>) -> Self {
+    pub fn new(
+        formatter: &ChatFormatter,
+        event_tx: broadcast::Sender<Event>,
+        command_tx: mpsc::Sender<Command>,
+    ) -> Self {
         Self {
             formatter: formatter.clone(),
             event_tx,
+            command_tx,
         }
     }
     /// 메시지를 처리하고 이벤트를 전송합니다.
@@ -65,6 +75,11 @@ impl MessageHandler {
             message_codes::FREEZE => self.handle_freeze(message),
             message_codes::MUTE => self.handle_mute(message),
             message_codes::MANAGER_CHAT => self.handle_manager_message(message),
+            message_codes::EMOTICON => self.handle_emoticon_message(message),
+            message_codes::NOTIFICATION => self.handle_notification(message),
+            message_codes::DISCONNECT => self.handle_disconnect(message),
+            message_codes::SLOW => self.handle_slow(message),
+            message_codes::KICK_CANCEL => self.handle_kick_cancel(message),
             _ => {
                 // 다른 메시지 코드 처리
                 let _ = self.broadcast(Event::Unknown(message.code));
@@ -76,8 +91,35 @@ impl MessageHandler {
         res
     }
 
+    fn handle_slow(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Slow(parse_slow_event(message)));
+        None
+    }
+
+    fn handle_disconnect(&self, _: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.command_tx.try_send(Command::Shutdown);
+        None
+    }
+
+    fn handle_emoticon_message(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Chat(parse_emoticon_event(message)));
+        None
+    }
+
+    fn handle_notification(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Notification(parse_notification_event(message)));
+        None
+    }
+
     fn handle_manager_message(&self, message: RawMessage) -> Option<Vec<u8>> {
-        let _ = self.broadcast(Event::ManagerChat(parse_manager_chat_event(message)));
+        let _ = self.broadcast(Event::Chat(parse_manager_chat_event(message)));
+        None
+    }
+
+    fn handle_kick_cancel(&self, message: RawMessage) -> Option<Vec<u8>> {
+        if let Some(e) = parse_kick_cancel_event(message) {
+            let _ = self.broadcast(Event::KickCancel(e));
+        }
         None
     }
 

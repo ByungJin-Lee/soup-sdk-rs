@@ -1,7 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-use crate::chat::{constants::message_codes::MessageCode, types::User};
+use crate::chat::{
+    constants::message_codes::MessageCode,
+    types::{ChatType, Emoticon, User},
+};
 
 // --- 채팅 이벤트 ---
 #[derive(Debug, Clone, Serialize)]
@@ -18,10 +21,8 @@ pub enum Event {
     Disconnected,
 
     // --- 채팅 관련 이벤트 ---
-    /// 일반 채팅 메시지가 수신되었을 때 발생합니다.
+    /// 채팅 메시지가 수신되었을 때 발생합니다.
     Chat(ChatEvent),
-    /// 매니저 채팅 메시지가 수신되었을 때 발생합니다.
-    ManagerChat(ManagerChatEvent),
     /// 후원 (텍스트, 영상, 애드벌룬)이 발생했을 때.
     Donation(DonationEvent),
     /// 구독이 발생했을 때.
@@ -32,6 +33,8 @@ pub enum Event {
     Exit(UserEvent),
     // 시청자가 퇴장당한 경우,
     Kick(UserEvent),
+    // 강제 퇴장 취소,
+    KickCancel(SimplifiedUserEvent),
     // 시청자가 Mute 당한 경우
     Mute(MuteEvent),
     // 시청자가 블랙 당한경우,
@@ -44,6 +47,8 @@ pub enum Event {
     Join(SimplifiedUserEvent),
     /// 알 수 없는 이벤트 타입
     Unknown(MessageCode),
+    // 슬로우 이벤트
+    Slow(SlowEvent),
     /// 직접 처리
     Raw(Vec<u8>), // 원시 데이터로 처리할 수 있는 이벤트
 }
@@ -80,19 +85,16 @@ pub struct RestoredEvent {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatEvent {
+    /// 공통 속성 영역
     #[serde(flatten)]
     pub meta: EventMeta,
     pub comment: String,
+    pub chat_type: ChatType,
     pub user: User,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct ManagerChatEvent {
-    #[serde(flatten)]
-    pub meta: EventMeta,
-    pub comment: String,
-    pub user: User,
+    // manager chat에서만 true/false로 할당됩니다.
     pub is_admin: bool,
+    // emoticon 채팅에서만 할당됩니다.
+    pub emoticon: Option<Emoticon>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -128,6 +130,7 @@ pub struct NotificationEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
     pub message: String,
+    pub show: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -171,4 +174,11 @@ pub struct MuteEvent {
     pub message: String,
     pub by: String,
     pub counts: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SlowEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub duration: u32,
 }

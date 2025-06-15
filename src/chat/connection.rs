@@ -36,6 +36,7 @@ pub struct SoopChatConnection {
 // --- 내부 상태 관리용 구조체 ---
 struct ConnectionLoopState {
     command_rx: mpsc::Receiver<Command>,
+    command_tx: mpsc::Sender<Command>,
     event_tx: broadcast::Sender<Event>,
     options: SoopChatOptions,
     client: Arc<SoopHttpClient>, // HTTP 클라이언트 핸들
@@ -75,6 +76,7 @@ impl SoopChatConnection {
         // 소유권을 이전합니다.
         if let Some(command_rx) = rx_guard.take() {
             let loop_state = ConnectionLoopState {
+                command_tx: self.command_tx.clone(),
                 command_rx,
                 event_tx: self.event_tx.clone(),
                 options: self.options.clone(),
@@ -91,22 +93,6 @@ impl SoopChatConnection {
     /// 라이브러리가 방송하는 이벤트를 수신할 "수신기"를 얻습니다.
     pub fn subscribe(&self) -> broadcast::Receiver<Event> {
         self.event_tx.subscribe()
-    }
-
-    /// 채팅 메시지 전송 명령을 보냅니다.
-    pub async fn send_chat(&self, message: String) -> Result<()> {
-        self.command_tx
-            .send(Command::SendChat(message))
-            .await
-            .map_err(|e| Error::InternalChannel(e.to_string()))
-    }
-
-    /// 연결 종료 명령을 보냅니다.
-    pub async fn disconnect(&self) -> Result<()> {
-        self.command_tx
-            .send(Command::Shutdown)
-            .await
-            .map_err(|e| Error::InternalChannel(e.to_string()))
     }
 }
 
@@ -241,7 +227,7 @@ async fn run_communication_loop(
 ) -> Result<()> {
     let mut ping_interval = tokio::time::interval(Duration::from_secs(60));
 
-    let handler = MessageHandler::new(formatter, state.event_tx.clone());
+    let handler = MessageHandler::new(formatter, state.event_tx.clone(), state.command_tx.clone());
 
     loop {
         tokio::select! {

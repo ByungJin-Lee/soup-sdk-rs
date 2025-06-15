@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use soop_chat_sdk::{
     SoopHttpClient,
-    chat::{ChatEvent, Event, SoopChatConnection, options::SoopChatOptions},
+    chat::{Event, SoopChatConnection, options::SoopChatOptions},
 };
 
 #[tokio::main]
@@ -49,14 +49,14 @@ async fn main() -> anyhow::Result<()> {
 
 fn handle_event(event: Event) {
     match event {
-        Event::Raw(raw) => {
-            // println!("[Incoming] {}", String::from_utf8_lossy(&raw));
-        }
         Event::Chat(chat) => {
-            // print_chat(chat);
+            println!("{:?}", chat)
         }
         Event::Join(v) => {
             println!("{:?}", v)
+        }
+        Event::Disconnected => {
+            println!("정상 종료됨");
         }
         // Event::Exit(v) => {
         //     println!("E {}", v.user.id)

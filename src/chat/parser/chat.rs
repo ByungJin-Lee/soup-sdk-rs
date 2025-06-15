@@ -1,9 +1,9 @@
 use crate::chat::{
     ChatEvent,
     constants::chat_message_fields,
-    events::{EventMeta, ManagerChatEvent},
+    events::EventMeta,
     parser::{raw::RawMessage, user::parse_user_status},
-    types::{User, UserSubscribe},
+    types::{ChatType, User, UserSubscribe},
 };
 
 pub fn parse_chat_event(raw: RawMessage) -> ChatEvent {
@@ -14,6 +14,7 @@ pub fn parse_chat_event(raw: RawMessage) -> ChatEvent {
         meta: EventMeta {
             received_time: raw.received_time,
         },
+        chat_type: ChatType::Common,
         comment: body[chat_message_fields::CONTENT].clone().replace("\r", ""),
         user: User {
             id: body[chat_message_fields::USER_ID].clone(),
@@ -21,16 +22,19 @@ pub fn parse_chat_event(raw: RawMessage) -> ChatEvent {
             status: parse_user_status(&body[chat_message_fields::FLAGS]),
             subscribe: Some(sub),
         },
+        is_admin: false,
+        emoticon: None,
     }
 }
 
-pub fn parse_manager_chat_event(raw: RawMessage) -> ManagerChatEvent {
+pub fn parse_manager_chat_event(raw: RawMessage) -> ChatEvent {
     let body = raw.body;
 
-    ManagerChatEvent {
+    ChatEvent {
         meta: EventMeta {
             received_time: raw.received_time,
         },
+        chat_type: ChatType::Manager,
         comment: body[chat_message_fields::CONTENT].clone().replace("\r", ""),
         user: User {
             id: body[chat_message_fields::USER_ID].clone(),
@@ -38,6 +42,7 @@ pub fn parse_manager_chat_event(raw: RawMessage) -> ManagerChatEvent {
             status: parse_user_status(&body[5]),
             subscribe: None,
         },
+        emoticon: None,
         is_admin: body[2] == "1",
     }
 }

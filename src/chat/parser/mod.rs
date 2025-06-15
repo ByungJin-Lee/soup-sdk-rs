@@ -1,10 +1,14 @@
 pub mod chat;
 mod constants;
+pub mod emoticon;
 pub mod exit;
 pub mod freeze;
 pub mod join;
+pub mod kick;
 pub mod mute;
+pub mod notification;
 pub mod raw;
+pub mod slow;
 mod types;
 mod user;
 mod util;
