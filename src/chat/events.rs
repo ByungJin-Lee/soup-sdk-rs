@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::chat::{
     constants::message_codes::MessageCode,
-    types::{ChatType, Emoticon, User},
+    types::{ChatType, DonationType, Emoticon, User},
 };
 
 // --- 채팅 이벤트 ---
@@ -102,18 +102,11 @@ pub struct DonationEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
     pub from: String,
-    pub from_username: String,
-    pub to: String,
-    pub amount: u64,                   // 후원 금액
-    pub fan_club_ordinal: Option<u32>, // 팬클럽 순번
-    pub donation_type: String,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct ViewerEvent {
-    #[serde(flatten)]
-    pub meta: EventMeta,
-    pub users: Vec<String>,
+    pub from_label: String,
+    pub amount: u32,           // 후원 금액
+    pub fan_club_ordinal: u32, // 팬클럽 순번
+    pub become_top_fan: bool,
+    pub donation_type: DonationType,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -121,8 +114,10 @@ pub struct SubscribeEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
     pub user_id: String,
-    pub username: String,
-    pub fan_club_ordinal: Option<u32>, // 팬클럽 순번
+    pub label: String,
+    pub tier: u32,
+    // 구독 갱신인 경우 할당됩니다.
+    pub renew: u32,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -131,13 +126,6 @@ pub struct NotificationEvent {
     pub meta: EventMeta,
     pub message: String,
     pub show: bool,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct ViewerCountEvent {
-    #[serde(flatten)]
-    pub meta: EventMeta,
-    pub count: u32, // 현재 시청자 수
 }
 
 #[derive(Debug, Clone, Serialize)]

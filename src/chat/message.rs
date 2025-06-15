@@ -8,6 +8,11 @@ use crate::{
         constants::message_codes,
         formatter::ChatFormatter,
         parser::{
+            balloon::{
+                parse_ad_balloon_event, parse_balloon_event, parse_balloon_sub_event,
+                parse_station_ad_balloon_event, parse_video_balloon_event,
+                parse_vod_ad_balloon_event, parse_vod_balloon_event,
+            },
             chat::{parse_chat_event, parse_manager_chat_event},
             emoticon::parse_emoticon_event,
             exit::parse_exit_event,
@@ -18,6 +23,7 @@ use crate::{
             notification::parse_notification_event,
             raw::{RawMessage, parse_message},
             slow::parse_slow_event,
+            subscribe::{parse_subscribe_event, parse_subscribe_renew_event},
         },
     },
 };
@@ -80,6 +86,17 @@ impl MessageHandler {
             message_codes::DISCONNECT => self.handle_disconnect(message),
             message_codes::SLOW => self.handle_slow(message),
             message_codes::KICK_CANCEL => self.handle_kick_cancel(message),
+            message_codes::SUBSCRIBE => self.handle_subscribe(message),
+            message_codes::SUBSCRIBE_RENEW => self.handle_subscribe_renew(message),
+            // 도네이션
+            message_codes::DONATION
+            | message_codes::ADBALLOON_DONATION
+            | message_codes::SUB_DONATION
+            | message_codes::VOD_AD_DONATION
+            | message_codes::VOD_DONATION
+            | message_codes::AD_STATION_DONATION
+            | message_codes::VIDEO_DONATION => self.handle_donation(message),
+
             _ => {
                 // 다른 메시지 코드 처리
                 let _ = self.broadcast(Event::Unknown(message.code));
@@ -89,6 +106,31 @@ impl MessageHandler {
 
         // 메시지에 대한 응답이 필요한 경우, Vec<u8>를 반환합니다.
         res
+    }
+
+    fn handle_donation(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let e = match message.code {
+            message_codes::DONATION => parse_balloon_event(message),
+            message_codes::SUB_DONATION => parse_balloon_sub_event(message),
+            message_codes::VOD_DONATION => parse_vod_balloon_event(message),
+            message_codes::VOD_AD_DONATION => parse_vod_ad_balloon_event(message),
+            message_codes::ADBALLOON_DONATION => parse_ad_balloon_event(message),
+            message_codes::AD_STATION_DONATION => parse_station_ad_balloon_event(message),
+            message_codes::VIDEO_DONATION => parse_video_balloon_event(message),
+            _ => return None,
+        };
+        let _ = self.broadcast(Event::Donation(e));
+        None
+    }
+
+    fn handle_subscribe_renew(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Subscribe(parse_subscribe_renew_event(message)));
+        None
+    }
+
+    fn handle_subscribe(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Subscribe(parse_subscribe_event(message)));
+        None
     }
 
     fn handle_slow(&self, message: RawMessage) -> Option<Vec<u8>> {

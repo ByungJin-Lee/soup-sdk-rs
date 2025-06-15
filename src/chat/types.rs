@@ -41,3 +41,10 @@ pub struct Emoticon {
     pub ext: String,
     pub version: String,
 }
+
+#[derive(Debug, Serialize, Clone)]
+pub enum DonationType {
+    Balloon,
+    ADBalloon,
+    VODBalloon,
+}

@@ -1,3 +1,4 @@
+pub mod balloon;
 pub mod chat;
 mod constants;
 pub mod emoticon;
@@ -9,6 +10,7 @@ pub mod mute;
 pub mod notification;
 pub mod raw;
 pub mod slow;
+pub mod subscribe;
 mod types;
 mod user;
 mod util;

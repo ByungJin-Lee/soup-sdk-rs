@@ -21,7 +21,6 @@ pub enum MessageType {
     KickCancel,
     // 미구현
     EnterInfo,
-    TextDonation,
     AdBalloonDonation,
     Subscribe,
     VideoDonation,
@@ -37,7 +36,6 @@ impl From<u32> for MessageType {
             message_codes::CHAT => Self::Chat,
             message_codes::DISCONNECT => Self::Disconnect,
             message_codes::ENTER_INFO => Self::EnterInfo,
-            message_codes::TEXT_DONATION => Self::TextDonation,
             message_codes::ADBALLOON_DONATION => Self::AdBalloonDonation,
             message_codes::MUTE => Self::Mute,
             message_codes::FREEZE => Self::Freeze,
@@ -67,7 +65,6 @@ impl MessageType {
             Self::Chat => message_codes::CHAT,
             Self::Disconnect => message_codes::DISCONNECT,
             Self::EnterInfo => message_codes::ENTER_INFO,
-            Self::TextDonation => message_codes::TEXT_DONATION,
             Self::AdBalloonDonation => message_codes::ADBALLOON_DONATION,
             Self::Subscribe => message_codes::SUBSCRIBE,
             Self::Notification => message_codes::NOTIFICATION,

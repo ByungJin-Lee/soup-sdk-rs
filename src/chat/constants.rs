@@ -18,17 +18,25 @@ pub mod message_codes {
     pub const DISCONNECT: MessageCode = 7;
     pub const MUTE: MessageCode = 8;
     pub const ENTER_INFO: MessageCode = 12;
-    pub const TEXT_DONATION: MessageCode = 18;
     pub const FREEZE: MessageCode = 21;
     pub const SLOW: MessageCode = 23;
     pub const MANAGER_CHAT: MessageCode = 26;
-    pub const ADBALLOON_DONATION: MessageCode = 87;
-    pub const SUBSCRIBE: MessageCode = 93;
+    pub const SUBSCRIBE: MessageCode = 91;
+    pub const SUBSCRIBE_RENEW: MessageCode = 93;
     pub const KICK_CANCEL: MessageCode = 76;
     pub const NOTIFICATION: MessageCode = 104;
     pub const EMOTICON: MessageCode = 109;
-    pub const VIDEO_DONATION: MessageCode = 105;
     pub const USER_JOIN: MessageCode = 127;
+    // balloon
+    pub const DONATION: MessageCode = 18;
+    pub const SUB_DONATION: MessageCode = 33;
+    pub const VOD_DONATION: MessageCode = 86;
+    // ad balloon
+    pub const VOD_AD_DONATION: MessageCode = 103;
+    pub const ADBALLOON_DONATION: MessageCode = 87;
+    pub const AD_STATION_DONATION: MessageCode = 107;
+    // video balloon
+    pub const VIDEO_DONATION: MessageCode = 105;
 }
 
 pub mod chat_message_fields {

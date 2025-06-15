@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "htvv2i".to_string(),
+        streamer_id: "phonics1".to_string(),
     };
 
     // --- 2. 초기화 (생성) ---
@@ -49,14 +49,17 @@ async fn main() -> anyhow::Result<()> {
 
 fn handle_event(event: Event) {
     match event {
-        Event::Chat(chat) => {
-            println!("{:?}", chat)
+        Event::Chat(e) => {
+            println!("{: <20} {}", e.user.label, e.comment)
         }
         Event::Join(v) => {
-            println!("{:?}", v)
+            // println!("{:?}", v)
         }
         Event::Disconnected => {
             println!("정상 종료됨");
+        }
+        Event::Donation(d) => {
+            println!("--- balloon {} {}", d.from_label, d.amount)
         }
         // Event::Exit(v) => {
         //     println!("E {}", v.user.id)
