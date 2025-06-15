@@ -12,6 +12,7 @@ use crate::{
             exit::parse_exit_event,
             freeze::parse_freeze_event,
             join::parse_join_event,
+            mute::parse_mute_event,
             raw::{RawMessage, parse_message},
         },
     },
@@ -62,6 +63,7 @@ impl MessageHandler {
             message_codes::EXIT => self.handle_exit(message),
             message_codes::USER_JOIN => self.handle_join(message),
             message_codes::FREEZE => self.handle_freeze(message),
+            message_codes::MUTE => self.handle_mute(message),
             _ => {
                 // 다른 메시지 코드 처리
                 let _ = self.broadcast(Event::Unknown(message.code));
@@ -77,6 +79,11 @@ impl MessageHandler {
         if let Some(e) = parse_join_event(message) {
             let _ = self.broadcast(Event::Join(e));
         }
+        None
+    }
+
+    fn handle_mute(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Mute(parse_mute_event(message)));
         None
     }
 

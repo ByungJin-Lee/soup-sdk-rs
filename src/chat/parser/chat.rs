@@ -14,7 +14,7 @@ pub fn parse_chat_event(raw: RawMessage) -> ChatEvent {
         meta: EventMeta {
             received_time: raw.received_time,
         },
-        comment: body[chat_message_fields::CONTENT].clone(),
+        comment: body[chat_message_fields::CONTENT].clone().replace("\r", ""),
         user: User {
             id: body[chat_message_fields::USER_ID].clone(),
             label: body[chat_message_fields::USER_NICK].clone(),

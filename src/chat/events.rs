@@ -28,10 +28,10 @@ pub enum Event {
     Enter(UserEvent),
     /// 시청자가 채팅방에서 퇴장했을 때.
     Exit(UserEvent),
-    /// 시청자의 메시지가 퇴장당한경우,
-    KickMessage(KickMessageEvent),
     // 시청자가 퇴장당한 경우,
     Kick(UserEvent),
+    // 시청자가 Mute 당한 경우
+    Mute(MuteEvent),
     // 시청자가 블랙 당한경우,
     Black(SimplifiedUserEvent),
     // 채팅방이 얼려진 경우,
@@ -142,13 +142,6 @@ pub struct SimplifiedUserEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct KickMessageEvent {
-    #[serde(flatten)]
-    pub meta: EventMeta,
-    pub chat_no: u32,
-}
-
-#[derive(Debug, Clone, Serialize)]
 pub struct FreezeEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -156,4 +149,15 @@ pub struct FreezeEvent {
     pub limit_subscription_month: u32,
     pub limit_balloons: u32,
     pub targets: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct MuteEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub user: User,
+    pub seconds: u32,
+    pub message: String,
+    pub by: String,
+    pub counts: u32,
 }

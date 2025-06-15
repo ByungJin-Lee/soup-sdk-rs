@@ -16,6 +16,7 @@ pub mod message_codes {
     pub const EXIT: MessageCode = 4;
     pub const CHAT: MessageCode = 5;
     pub const DISCONNECT: MessageCode = 7;
+    pub const MUTE: MessageCode = 8;
     pub const ENTER_INFO: MessageCode = 12;
     pub const TEXT_DONATION: MessageCode = 18;
     pub const FREEZE: MessageCode = 21;

@@ -1,5 +1,4 @@
 use crate::chat::{
-    Event,
     events::{EventMeta, UserEvent},
     parser::{raw::RawMessage, user::parse_user_status},
     types::User,

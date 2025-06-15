@@ -3,6 +3,7 @@ mod constants;
 pub mod exit;
 pub mod freeze;
 pub mod join;
+pub mod mute;
 pub mod raw;
 mod types;
 mod user;

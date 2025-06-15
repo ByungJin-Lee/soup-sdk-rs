@@ -6,3 +6,5 @@ pub mod freeze_target_flags {
     pub const FOLLOWER: u32 = 1 << 8;
     pub const MANAGER: u32 = 1 << 9;
 }
+
+pub const SUPER_USERS: [&str; 5] = ["streamer", "manager", "operator", "operator", "cleaner"];

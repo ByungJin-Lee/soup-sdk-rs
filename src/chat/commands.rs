@@ -3,11 +3,17 @@ use crate::chat::constants::message_codes;
 // --- 채팅 명령어 타입 ---
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum MessageType {
+    // 구현
     Ping,
     Connect,
     JOIN,
     Exit,
     Chat,
+    UserJOIN,
+    Freeze,
+    Unknown,
+    Mute,
+    // 미구현
     Disconnect,
     EnterInfo,
     TextDonation,
@@ -16,9 +22,6 @@ pub enum MessageType {
     Notification,
     Emoticon,
     VideoDonation,
-    UserJOIN,
-    Freeze,
-    Unknown,
 }
 
 impl From<u32> for MessageType {
@@ -33,6 +36,7 @@ impl From<u32> for MessageType {
             message_codes::ENTER_INFO => Self::EnterInfo,
             message_codes::TEXT_DONATION => Self::TextDonation,
             message_codes::ADBALLOON_DONATION => Self::AdBalloonDonation,
+            message_codes::MUTE => Self::Mute,
             message_codes::FREEZE => Self::Freeze,
             message_codes::SUBSCRIBE => Self::Subscribe,
             message_codes::NOTIFICATION => Self::Notification,
@@ -63,6 +67,7 @@ impl MessageType {
             Self::VideoDonation => message_codes::VIDEO_DONATION,
             Self::UserJOIN => message_codes::USER_JOIN,
             Self::Freeze => message_codes::FREEZE,
+            Self::Mute => message_codes::MUTE,
             Self::Unknown => 0, // 알 수 없는 명령어는 0으로 처리
         }
     }
