@@ -20,6 +20,8 @@ pub enum Event {
     // --- 채팅 관련 이벤트 ---
     /// 일반 채팅 메시지가 수신되었을 때 발생합니다.
     Chat(ChatEvent),
+    /// 매니저 채팅 메시지가 수신되었을 때 발생합니다.
+    ManagerChat(ManagerChatEvent),
     /// 후원 (텍스트, 영상, 애드벌룬)이 발생했을 때.
     Donation(DonationEvent),
     /// 구독이 발생했을 때.
@@ -82,6 +84,15 @@ pub struct ChatEvent {
     pub meta: EventMeta,
     pub comment: String,
     pub user: User,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ManagerChatEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub comment: String,
+    pub user: User,
+    pub is_admin: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]

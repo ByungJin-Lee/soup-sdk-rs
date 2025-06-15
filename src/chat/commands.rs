@@ -9,6 +9,7 @@ pub enum MessageType {
     JOIN,
     Exit,
     Chat,
+    ManagerChat,
     UserJOIN,
     Freeze,
     Unknown,
@@ -43,6 +44,7 @@ impl From<u32> for MessageType {
             message_codes::EMOTICON => Self::Emoticon,
             message_codes::VIDEO_DONATION => Self::VideoDonation,
             message_codes::USER_JOIN => Self::UserJOIN,
+            message_codes::MANAGER_CHAT => Self::ManagerChat,
             // 알 수 없는 명령어는 Unknown으로 처리합니다.
             _ => Self::Unknown,
         }
@@ -52,6 +54,7 @@ impl From<u32> for MessageType {
 impl MessageType {
     pub fn to_code(&self) -> u32 {
         match self {
+            Self::ManagerChat => message_codes::MANAGER_CHAT,
             Self::Ping => message_codes::PING,
             Self::Connect => message_codes::CONNECT,
             Self::JOIN => message_codes::JOIN,

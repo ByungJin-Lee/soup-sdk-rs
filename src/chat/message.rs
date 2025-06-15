@@ -8,7 +8,7 @@ use crate::{
         constants::message_codes,
         formatter::ChatFormatter,
         parser::{
-            chat::parse_chat_event,
+            chat::{parse_chat_event, parse_manager_chat_event},
             exit::parse_exit_event,
             freeze::parse_freeze_event,
             join::parse_join_event,
@@ -64,6 +64,7 @@ impl MessageHandler {
             message_codes::USER_JOIN => self.handle_join(message),
             message_codes::FREEZE => self.handle_freeze(message),
             message_codes::MUTE => self.handle_mute(message),
+            message_codes::MANAGER_CHAT => self.handle_manager_message(message),
             _ => {
                 // 다른 메시지 코드 처리
                 let _ = self.broadcast(Event::Unknown(message.code));
@@ -73,6 +74,11 @@ impl MessageHandler {
 
         // 메시지에 대한 응답이 필요한 경우, Vec<u8>를 반환합니다.
         res
+    }
+
+    fn handle_manager_message(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::ManagerChat(parse_manager_chat_event(message)));
+        None
     }
 
     fn handle_join(&self, message: RawMessage) -> Option<Vec<u8>> {

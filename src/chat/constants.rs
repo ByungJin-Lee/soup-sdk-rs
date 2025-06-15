@@ -20,6 +20,8 @@ pub mod message_codes {
     pub const ENTER_INFO: MessageCode = 12;
     pub const TEXT_DONATION: MessageCode = 18;
     pub const FREEZE: MessageCode = 21;
+    pub const SLOW: MessageCode = 23;
+    pub const MANAGER_CHAT: MessageCode = 26;
     pub const ADBALLOON_DONATION: MessageCode = 87;
     pub const SUBSCRIBE: MessageCode = 93;
     pub const KICK_CANCEL: MessageCode = 76;
