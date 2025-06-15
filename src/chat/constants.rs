@@ -17,12 +17,14 @@ pub mod message_codes {
     pub const CHAT: MessageCode = 5;
     pub const DISCONNECT: MessageCode = 7;
     pub const ENTER_INFO: MessageCode = 12;
-    pub const TEXTDONATION: MessageCode = 18;
-    pub const ADBALLOONDONATION: MessageCode = 87;
+    pub const TEXT_DONATION: MessageCode = 18;
+    pub const FREEZE: MessageCode = 21;
+    pub const ADBALLOON_DONATION: MessageCode = 87;
     pub const SUBSCRIBE: MessageCode = 93;
+    pub const KICK_CANCEL: MessageCode = 76;
     pub const NOTIFICATION: MessageCode = 104;
     pub const EMOTICON: MessageCode = 109;
-    pub const VIDEODONATION: MessageCode = 105;
+    pub const VIDEO_DONATION: MessageCode = 105;
     pub const USER_JOIN: MessageCode = 127;
 }
 

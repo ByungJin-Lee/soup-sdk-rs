@@ -10,6 +10,7 @@ use crate::{
         parser::{
             chat::parse_chat_event,
             exit::parse_exit_event,
+            freeze::parse_freeze_event,
             join::parse_join_event,
             raw::{RawMessage, parse_message},
         },
@@ -60,9 +61,10 @@ impl MessageHandler {
             message_codes::CHAT => self.handle_chat(message),
             message_codes::EXIT => self.handle_exit(message),
             message_codes::USER_JOIN => self.handle_join(message),
+            message_codes::FREEZE => self.handle_freeze(message),
             _ => {
                 // 다른 메시지 코드 처리
-                self.broadcast(Event::Unknown(message.code));
+                let _ = self.broadcast(Event::Unknown(message.code));
                 None
             }
         };
@@ -73,19 +75,28 @@ impl MessageHandler {
 
     fn handle_join(&self, message: RawMessage) -> Option<Vec<u8>> {
         if let Some(e) = parse_join_event(message) {
-            self.broadcast(Event::Join(e));
+            let _ = self.broadcast(Event::Join(e));
         }
         None
     }
 
+    fn handle_freeze(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::Freeze(parse_freeze_event(message)));
+        None
+    }
+
     fn handle_chat(&self, message: RawMessage) -> Option<Vec<u8>> {
-        self.broadcast(Event::Chat(parse_chat_event(message)));
+        let _ = self.broadcast(Event::Chat(parse_chat_event(message)));
         None
     }
 
     fn handle_exit(&self, message: RawMessage) -> Option<Vec<u8>> {
-        if let Some(e) = parse_exit_event(message) {
-            self.broadcast(Event::Exit(e));
+        if let Some((is_kick, e)) = parse_exit_event(message) {
+            if is_kick {
+                let _ = self.broadcast(Event::Exit(e));
+            } else {
+                let _ = self.broadcast(Event::Kick(e));
+            };
         }
         None
     }

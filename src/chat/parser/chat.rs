@@ -1,8 +1,8 @@
 use crate::chat::{
     ChatEvent,
-    constants::{chat_message_fields, user_flags},
+    constants::chat_message_fields,
     events::EventMeta,
-    parser::{raw::RawMessage, types::UserFlags, user::parse_user_status, util::is},
+    parser::{raw::RawMessage, user::parse_user_status},
     types::{User, UserSubscribe},
 };
 
@@ -22,29 +22,6 @@ pub fn parse_chat_event(raw: RawMessage) -> ChatEvent {
             subscribe: Some(sub),
         },
     }
-}
-
-fn parse_user_flags(flag_str: &str) -> UserFlags {
-    let flags: Vec<u32> = flag_str
-        .split("|")
-        .map(|val| val.parse::<u32>().unwrap())
-        .collect();
-
-    return UserFlags {
-        follow: flags[1],
-        combined: flags[0],
-    };
-}
-
-fn get_follow(flags: u32) -> u8 {
-    // 1티어
-    if is(flags, user_flags::FOLLOWER_TIER1) {
-        return 1;
-        // 2티어
-    } else if is(flags, user_flags::FOLLOWER_TIER2) {
-        return 2;
-    }
-    return 0;
 }
 
 fn parse_subscribe(body: &Vec<String>) -> UserSubscribe {

@@ -17,6 +17,7 @@ pub enum MessageType {
     Emoticon,
     VideoDonation,
     UserJOIN,
+    Freeze,
     Unknown,
 }
 
@@ -30,12 +31,13 @@ impl From<u32> for MessageType {
             message_codes::CHAT => Self::Chat,
             message_codes::DISCONNECT => Self::Disconnect,
             message_codes::ENTER_INFO => Self::EnterInfo,
-            message_codes::TEXTDONATION => Self::TextDonation,
-            message_codes::ADBALLOONDONATION => Self::AdBalloonDonation,
+            message_codes::TEXT_DONATION => Self::TextDonation,
+            message_codes::ADBALLOON_DONATION => Self::AdBalloonDonation,
+            message_codes::FREEZE => Self::Freeze,
             message_codes::SUBSCRIBE => Self::Subscribe,
             message_codes::NOTIFICATION => Self::Notification,
             message_codes::EMOTICON => Self::Emoticon,
-            message_codes::VIDEODONATION => Self::VideoDonation,
+            message_codes::VIDEO_DONATION => Self::VideoDonation,
             message_codes::USER_JOIN => Self::UserJOIN,
             // 알 수 없는 명령어는 Unknown으로 처리합니다.
             _ => Self::Unknown,
@@ -53,13 +55,14 @@ impl MessageType {
             Self::Chat => message_codes::CHAT,
             Self::Disconnect => message_codes::DISCONNECT,
             Self::EnterInfo => message_codes::ENTER_INFO,
-            Self::TextDonation => message_codes::TEXTDONATION,
-            Self::AdBalloonDonation => message_codes::ADBALLOONDONATION,
+            Self::TextDonation => message_codes::TEXT_DONATION,
+            Self::AdBalloonDonation => message_codes::ADBALLOON_DONATION,
             Self::Subscribe => message_codes::SUBSCRIBE,
             Self::Notification => message_codes::NOTIFICATION,
             Self::Emoticon => message_codes::EMOTICON,
-            Self::VideoDonation => message_codes::VIDEODONATION,
+            Self::VideoDonation => message_codes::VIDEO_DONATION,
             Self::UserJOIN => message_codes::USER_JOIN,
+            Self::Freeze => message_codes::FREEZE,
             Self::Unknown => 0, // 알 수 없는 명령어는 0으로 처리
         }
     }

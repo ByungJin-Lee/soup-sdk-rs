@@ -41,11 +41,6 @@ impl ChatFormatter {
     }
 }
 
-fn print_hex(data: &[u8]) {
-    let hex_string: String = data.iter().map(|b| format!("{:02x} ", b)).collect();
-    print!("[System] Hex: {}\n", hex_string);
-}
-
 /// 여러 바이트 슬라이스 조각들을 하나의 새로운 Vec<u8>로 병합합니다.
 fn flatten_byte_slices(parts: &[&[u8]]) -> Vec<u8> {
     let total_len = parts.iter().map(|s| s.len()).sum();

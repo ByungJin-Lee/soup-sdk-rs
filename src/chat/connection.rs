@@ -3,7 +3,6 @@ use super::events::{Event, ReconnectingEvent, RestoredEvent};
 use super::options::SoopChatOptions;
 use crate::SoopHttpClient;
 use crate::chat::commands::MessageType;
-use crate::chat::constants::message_codes;
 use crate::chat::events::EventMeta;
 use crate::chat::formatter::ChatFormatter;
 use crate::chat::message::MessageHandler;
@@ -257,13 +256,12 @@ async fn run_communication_loop(
             // 사용자 커맨드 수신
             Some(command) = state.command_rx.recv() => {
                 match command {
-                    Command::SendChat(text) => {
-                        // let packet = formatter::format_chat_packet(&text);
-                        // writer.send(Message::Text(packet)).await?;
-                    },
                     Command::Shutdown => {
                         // 정상 종료 신호이므로 Ok(())를 반환
                         return Ok(());
+                    }
+                    _ => {
+                        // 다른 명령어는 모두 처리하지 않는다
                     }
                 }
             },
@@ -274,26 +272,4 @@ async fn run_communication_loop(
             }
         }
     }
-}
-
-// --- 헬퍼 함수들 ---
-
-/// 수신된 명령을 처리하고, 루프를 계속할지 여부를 반환합니다.
-async fn handle_command(
-    command: Command,
-    writer: &mut SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>,
-) -> bool {
-    match command {
-        Command::SendChat(text) => {
-            // let packet = formatter::format_chat_packet(&text);
-            // if writer.send(Message::Text(packet)).await.is_err() {
-            //     // 전송 실패는 곧 연결이 끊어졌음을 의미합니다.
-            //     return false; // 통신 루프 중단 신호
-            // }
-        }
-        Command::Shutdown => {
-            return false; // 메인 루프 중단 신호
-        }
-    }
-    true // 루프 계속 진행
 }

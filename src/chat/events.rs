@@ -28,9 +28,17 @@ pub enum Event {
     Enter(UserEvent),
     /// 시청자가 채팅방에서 퇴장했을 때.
     Exit(UserEvent),
+    /// 시청자의 메시지가 퇴장당한경우,
+    KickMessage(KickMessageEvent),
+    // 시청자가 퇴장당한 경우,
+    Kick(UserEvent),
+    // 시청자가 블랙 당한경우,
+    Black(SimplifiedUserEvent),
+    // 채팅방이 얼려진 경우,
+    Freeze(FreezeEvent),
     /// 스트리머나 매니저가 보낸 공지사항 메시지.
     Notification(NotificationEvent),
-    /// 현재 시청자 수가 업데이트되었을 때.
+    /// 시청자가 채팅방에 입장했을때
     Join(SimplifiedUserEvent),
     /// 알 수 없는 이벤트 타입
     Unknown(MessageCode),
@@ -131,4 +139,21 @@ pub struct SimplifiedUserEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
     pub user_id: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct KickMessageEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub chat_no: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct FreezeEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub freezed: bool,
+    pub limit_subscription_month: u32,
+    pub limit_balloons: u32,
+    pub targets: Vec<String>,
 }

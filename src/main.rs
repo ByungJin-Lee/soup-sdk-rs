@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "collet11".to_string(),
+        streamer_id: "htvv2i".to_string(),
     };
 
     // --- 2. 초기화 (생성) ---
@@ -55,25 +55,17 @@ fn handle_event(event: Event) {
         Event::Chat(chat) => {
             // print_chat(chat);
         }
-        Event::Exit(v) => {
-            println!("E {}", v.user.id)
-        }
         Event::Join(v) => {
-            println!("J {}", v.user_id)
+            println!("{:?}", v)
         }
+        // Event::Exit(v) => {
+        //     println!("E {}", v.user.id)
+        // }
+        // Event::Join(v) => {
+        //     println!("J {}", v.user_id)
+        // }
         _ => {
             // println!("[Incoming] {:?}", event);
         }
     }
-}
-
-fn print_chat(e: ChatEvent) {
-    println!(
-        "{} 티어:{} 팬:{} 열혈:{}\n{}\n",
-        e.user.label,
-        e.user.status.follow,
-        e.user.status.is_fan,
-        e.user.status.is_top_fan,
-        e.comment
-    )
 }
