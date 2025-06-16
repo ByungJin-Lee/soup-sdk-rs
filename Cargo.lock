@@ -1532,7 +1532,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "soop-chat-sdk"
+name = "soup-sdk"
 version = "0.1.0"
 dependencies = [
  "anyhow",

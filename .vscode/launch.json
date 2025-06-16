@@ -7,16 +7,11 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in library 'soop_chat_sdk'",
+      "name": "Debug unit tests in library 'soup_sdk'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--lib",
-          "--package=soop-chat-sdk"
-        ],
+        "args": ["test", "--no-run", "--lib", "--package=soup-sdk"],
         "filter": {
-          "name": "soop_chat_sdk",
+          "name": "soup_sdk",
           "kind": "lib"
         }
       },
@@ -26,15 +21,11 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'soop-chat-sdk'",
+      "name": "Debug executable 'soup-sdk'",
       "cargo": {
-        "args": [
-          "build",
-          "--bin=soop-chat-sdk",
-          "--package=soop-chat-sdk"
-        ],
+        "args": ["build", "--bin=soup-sdk", "--package=soup-sdk"],
         "filter": {
-          "name": "soop-chat-sdk",
+          "name": "soup-sdk",
           "kind": "bin"
         }
       },
@@ -44,16 +35,11 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in executable 'soop-chat-sdk'",
+      "name": "Debug unit tests in executable 'soup-sdk'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--bin=soop-chat-sdk",
-          "--package=soop-chat-sdk"
-        ],
+        "args": ["test", "--no-run", "--bin=soup-sdk", "--package=soup-sdk"],
         "filter": {
-          "name": "soop-chat-sdk",
+          "name": "soup-sdk",
           "kind": "bin"
         }
       },

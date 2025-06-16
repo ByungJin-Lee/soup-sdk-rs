@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use soop_chat_sdk::{
+use soup_sdk::{
     SoopHttpClient,
     chat::{Event, SoopChatConnection, options::SoopChatOptions},
 };
