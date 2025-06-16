@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "phonics1".to_string(),
+        streamer_id: "yangdoki".to_string(),
     };
 
     // --- 2. 초기화 (생성) ---
@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
 fn handle_event(event: Event) {
     match event {
         Event::Chat(e) => {
-            println!("{: <20} {}", e.user.label, e.comment)
+            println!("채팅     {:<10} {}", e.user.label, e.comment)
         }
         Event::Join(v) => {
             // println!("{:?}", v)
@@ -59,13 +59,37 @@ fn handle_event(event: Event) {
             println!("정상 종료됨");
         }
         Event::Donation(d) => {
-            println!("--- balloon {} {}", d.from_label, d.amount)
+            println!("별풍선    {} {}", d.from_label, d.amount)
+        }
+        Event::Freeze(e) => {
+            println!("얼리기    {:?}", e)
+        }
+        Event::Mute(e) => {
+            println!("채팅 금지 {:?}", e);
+        }
+        Event::Slow(e) => {
+            println!("슬로우    {:?}", e)
+        }
+        Event::Notification(e) => {
+            println!("공지      {:?}", e)
+        }
+        Event::KickCancel(e) => {
+            println!("취소      {:?}", e)
+        }
+        Event::MissionDonation(e) => {
+            println!("미션풍    {:?}", e)
+        }
+        Event::MissionTotal(e) => {
+            println!("미션전체  {:?}", e)
+        }
+        Event::BattleMissionResult(e) => {
+            println!("배틀결과  {:?}", e)
+        }
+        Event::ChallengeMissionResult(e) => {
+            println!("도전결과  {:?}", e)
         }
         // Event::Exit(v) => {
         //     println!("E {}", v.user.id)
-        // }
-        // Event::Join(v) => {
-        //     println!("J {}", v.user_id)
         // }
         _ => {
             // println!("[Incoming] {:?}", event);

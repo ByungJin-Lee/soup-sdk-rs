@@ -6,6 +6,7 @@ pub mod exit;
 pub mod freeze;
 pub mod join;
 pub mod kick;
+pub mod mission;
 pub mod mute;
 pub mod notification;
 pub mod raw;

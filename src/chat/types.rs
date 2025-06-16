@@ -48,3 +48,16 @@ pub enum DonationType {
     ADBalloon,
     VODBalloon,
 }
+
+#[derive(Debug, Serialize, Clone)]
+pub enum MissionType {
+    Battle,
+    Challenge,
+}
+
+pub enum MissionParser {
+    Mission,
+    MissionTotal,
+    BattleNotice,
+    ChallengeNotice,
+}

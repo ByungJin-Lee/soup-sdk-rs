@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::chat::{
     constants::message_codes::MessageCode,
-    types::{ChatType, DonationType, Emoticon, User},
+    types::{ChatType, DonationType, Emoticon, MissionType, User},
 };
 
 // --- 채팅 이벤트 ---
@@ -45,6 +45,13 @@ pub enum Event {
     Notification(NotificationEvent),
     /// 시청자가 채팅방에 입장했을때
     Join(SimplifiedUserEvent),
+    /// 미션
+    MissionDonation(MissionEvent),
+    /// 미션 정산
+    MissionTotal(MissionTotalEvent),
+    /// 미션 결과
+    BattleMissionResult(BattleMissionResultEvent),
+    ChallengeMissionResult(ChallengeMissionResultEvent),
     /// 알 수 없는 이벤트 타입
     Unknown(MessageCode),
     // 슬로우 이벤트
@@ -107,6 +114,41 @@ pub struct DonationEvent {
     pub fan_club_ordinal: u32, // 팬클럽 순번
     pub become_top_fan: bool,
     pub donation_type: DonationType,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct MissionEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub from: String,
+    pub from_label: String,
+    pub amount: u32, // 후원 금액
+    pub mission_type: MissionType,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct MissionTotalEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub mission_type: MissionType,
+    pub amount: u32,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ChallengeMissionResultEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub is_success: bool,
+    pub title: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct BattleMissionResultEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub is_draw: bool,
+    pub winner: String,
+    pub title: String,
 }
 
 #[derive(Debug, Clone, Serialize)]

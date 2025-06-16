@@ -37,6 +37,8 @@ pub mod message_codes {
     pub const AD_STATION_DONATION: MessageCode = 107;
     // video balloon
     pub const VIDEO_DONATION: MessageCode = 105;
+    // battle & mission
+    pub const MISSION_DONATION: MessageCode = 121;
 }
 
 pub mod chat_message_fields {

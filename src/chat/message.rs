@@ -6,6 +6,9 @@ use crate::{
         Event,
         commands::{Command, MessageType},
         constants::message_codes,
+        events::{
+            BattleMissionResultEvent, ChallengeMissionResultEvent, MissionEvent, MissionTotalEvent,
+        },
         formatter::ChatFormatter,
         parser::{
             balloon::{
@@ -19,12 +22,14 @@ use crate::{
             freeze::parse_freeze_event,
             join::parse_join_event,
             kick::parse_kick_cancel_event,
+            mission::parse_mission_event,
             mute::parse_mute_event,
             notification::parse_notification_event,
             raw::{RawMessage, parse_message},
             slow::parse_slow_event,
             subscribe::{parse_subscribe_event, parse_subscribe_renew_event},
         },
+        types::MissionParser,
     },
 };
 
@@ -88,6 +93,8 @@ impl MessageHandler {
             message_codes::KICK_CANCEL => self.handle_kick_cancel(message),
             message_codes::SUBSCRIBE => self.handle_subscribe(message),
             message_codes::SUBSCRIBE_RENEW => self.handle_subscribe_renew(message),
+            // 미션
+            message_codes::MISSION_DONATION => self.handle_mission(message),
             // 도네이션
             message_codes::DONATION
             | message_codes::ADBALLOON_DONATION
@@ -120,6 +127,39 @@ impl MessageHandler {
             _ => return None,
         };
         let _ = self.broadcast(Event::Donation(e));
+        None
+    }
+
+    fn handle_mission(&self, message: RawMessage) -> Option<Vec<u8>> {
+        if let Some((name, val)) = parse_mission_event(message).ok() {
+            match name {
+                MissionParser::Mission => {
+                    if let Ok(be) = val.downcast::<MissionEvent>() {
+                        let e: MissionEvent = *be;
+                        let _ = self.broadcast(Event::MissionDonation(e));
+                    }
+                }
+                MissionParser::MissionTotal => {
+                    if let Ok(be) = val.downcast::<MissionTotalEvent>() {
+                        let e: MissionTotalEvent = *be;
+                        let _ = self.broadcast(Event::MissionTotal(e));
+                    }
+                }
+                MissionParser::BattleNotice => {
+                    if let Ok(be) = val.downcast::<BattleMissionResultEvent>() {
+                        let e: BattleMissionResultEvent = *be;
+                        let _ = self.broadcast(Event::BattleMissionResult(e));
+                    }
+                }
+                MissionParser::ChallengeNotice => {
+                    if let Ok(be) = val.downcast::<ChallengeMissionResultEvent>() {
+                        let e: ChallengeMissionResultEvent = *be;
+                        let _ = self.broadcast(Event::ChallengeMissionResult(e));
+                    }
+                }
+            }
+        }
+
         None
     }
 

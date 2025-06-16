@@ -34,6 +34,8 @@ impl SoopHttpClient {
             return Err(Error::Request(response.error_for_status().unwrap_err()));
         }
 
+        // JSON 응답에서 1차로 RESULT가 1인지 확인하고 동작하도록 수정
+
         // JSON 응답을 LiveDetail 구조체로 파싱합니다.
         let live_detail = response.json::<LiveDetail>().await.map_err(Error::Json)?;
 
