@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "yangdoki".to_string(),
+        streamer_id: "nangnan".to_string(),
     };
 
     // --- 2. 초기화 (생성) ---
@@ -77,7 +77,10 @@ fn handle_event(event: Event) {
             println!("취소      {:?}", e)
         }
         Event::MissionDonation(e) => {
-            println!("미션풍    {:?}", e)
+            println!(
+                "미션풍({:?})    {} {}개",
+                e.mission_type, e.from_label, e.amount
+            )
         }
         Event::MissionTotal(e) => {
             println!("미션전체  {:?}", e)
@@ -87,6 +90,9 @@ fn handle_event(event: Event) {
         }
         Event::ChallengeMissionResult(e) => {
             println!("도전결과  {:?}", e)
+        }
+        Event::Subscribe(e) => {
+            println!("구독      {:?}", e)
         }
         // Event::Exit(v) => {
         //     println!("E {}", v.user.id)

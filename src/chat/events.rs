@@ -204,6 +204,7 @@ pub struct MuteEvent {
     pub message: String,
     pub by: String,
     pub counts: u32,
+    pub superuser_type: String,
 }
 
 #[derive(Debug, Clone, Serialize)]

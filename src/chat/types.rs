@@ -55,6 +55,7 @@ pub enum MissionType {
     Challenge,
 }
 
+#[derive(Debug)]
 pub enum MissionParser {
     Mission,
     MissionTotal,

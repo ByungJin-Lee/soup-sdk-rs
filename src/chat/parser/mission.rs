@@ -27,22 +27,22 @@ pub fn parse_mission_event(raw: RawMessage) -> Result<(MissionParser, Box<dyn An
     let message_type = abs_json.message_type.as_str();
 
     match message_type {
-        "GIFT" | "CHALLENGE_GIFT" => Ok((
-            MissionParser::Mission,
-            Box::new(parse_gift_event(&raw, &raw_json, message_type)),
-        )),
-        "SETTLE" | "CHALLENGE_SETTLE" => Ok((
-            MissionParser::MissionTotal,
-            Box::new(parse_gift_total_event(raw, &raw_json, message_type)),
-        )),
-        "NOTICE" => Ok((
-            MissionParser::BattleNotice,
-            Box::new(parse_battle_result(raw, &raw_json)),
-        )),
-        "CHALLENGE_NOTICE" => Ok((
-            MissionParser::ChallengeNotice,
-            Box::new(parse_challenge_result(raw, &raw_json)),
-        )),
+        "GIFT" | "CHALLENGE_GIFT" => {
+            let e = parse_gift_event(&raw, &raw_json, message_type)?;
+            Ok((MissionParser::Mission, Box::new(e)))
+        }
+        "SETTLE" | "CHALLENGE_SETTLE" => {
+            let e = parse_gift_total_event(raw, &raw_json, message_type)?;
+            Ok((MissionParser::MissionTotal, Box::new(e)))
+        }
+        "NOTICE" => {
+            let e = parse_battle_result(raw, &raw_json)?;
+            Ok((MissionParser::BattleNotice, Box::new(e)))
+        }
+        "CHALLENGE_NOTICE" => {
+            let e = parse_challenge_result(raw, &raw_json)?;
+            Ok((MissionParser::ChallengeNotice, Box::new(e)))
+        }
         _ => Err(Error::InternalChannel("미션 이벤트 파싱 실패".to_string())),
     }
 }
