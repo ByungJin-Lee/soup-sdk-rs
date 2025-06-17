@@ -8,6 +8,7 @@ use crate::chat::formatter::ChatFormatter;
 use crate::chat::message::MessageHandler;
 use crate::chat::verification::NoVerification;
 use crate::error::{Error, Result};
+use crate::models::LiveDetail;
 use chrono::Utc;
 use futures_util::lock::Mutex;
 use futures_util::stream::SplitStream;
@@ -38,8 +39,8 @@ struct ConnectionLoopState {
     command_rx: mpsc::Receiver<Command>,
     command_tx: mpsc::Sender<Command>,
     event_tx: broadcast::Sender<Event>,
-    options: SoopChatOptions,
-    client: Arc<SoopHttpClient>, // HTTP 클라이언트 핸들
+    connection_url: String,
+    live_detail: LiveDetail,
 }
 
 impl SoopChatConnection {
@@ -70,7 +71,36 @@ impl SoopChatConnection {
             .map_err(|e| Error::InternalChannel(e.to_string()))
     }
 
+    fn make_connection_url(&self, live_detail: &LiveDetail) -> String {
+        format!(
+            "wss://{}:{}/Websocket/{}",
+            live_detail.channel.ch_domain.to_lowercase(),
+            live_detail.channel.ch_pt + 1,
+            self.options.streamer_id
+        )
+    }
+
     pub async fn start(&self) -> Result<()> {
+        // 연결 가능한 상태인지 live detail을 가져옵니다.
+        let (is_live, optional_live_detail) = self
+            .client
+            .get_live_detail_state(&self.options.streamer_id)
+            .await?;
+
+        // 오프라인이면 종료합니다.
+        if !is_live {
+            return Err(Error::StreamOffline);
+        } else if optional_live_detail.is_none() {
+            return Err(Error::InternalChannel(
+                "생방송 정보가 잘못되었습니다.".to_string(),
+            ));
+        }
+
+        let live_detail = optional_live_detail.unwrap();
+
+        // websocket url 생성
+        let connection_url = self.make_connection_url(&live_detail);
+
         // 소유권 을 안전하게 가져오기 위해, command_rx를 잠급니다.
         let mut rx_guard = self.command_rx.lock().await;
         // 소유권을 이전합니다.
@@ -79,13 +109,14 @@ impl SoopChatConnection {
                 command_tx: self.command_tx.clone(),
                 command_rx,
                 event_tx: self.event_tx.clone(),
-                options: self.options.clone(),
-                client: self.client.clone(),
+                connection_url,
+                live_detail,
             };
             // 백그라운드 스레드 실행
             tokio::spawn(run_connection_loop(loop_state));
             Ok(())
         } else {
+            // 이 객체는 일회용임, 한번 사용하면 재사용 불가
             Err(Error::AlreadyStarted)
         }
     }
@@ -96,74 +127,28 @@ impl SoopChatConnection {
     }
 }
 
+// 장애 대응 로직은 SRP에 부합하지 않으므로 제거합니다.
+
 // --- 메인 로직 ---
 async fn run_connection_loop(mut state: ConnectionLoopState) {
-    let mut attempts = 0u32;
-
-    loop {
-        // "작업자"에게 단 한 번의 세션 시도를 맡깁니다.
-        let session_result = try_connect_and_run_session(&mut state, attempts).await;
-
-        // 세션 결과를 바탕으로 다음 행동을 결정합니다.
-        match session_result {
-            // 세션이 정상적으로 종료(Shutdown)되면, 메인 루프를 완전히 빠져나갑니다.
-            Ok(_) => {
-                state.event_tx.send(Event::Disconnected).ok();
-                break;
-            }
-
-            Err(e) => match e {
-                // 방송이 꺼져있는 상태라면, 더 긴 주기로 대기합니다.
-                Error::StreamOffline => {
-                    tokio::time::sleep(Duration::from_secs(30)).await;
-                }
-                // 그 외 모든 에러(네트워크, WebSocket 등)는 재연결을 시도합니다.
-                _ => {
-                    print!("[System] Connection error: {:?}. Retrying...\n", e);
-
-                    attempts += 1;
-                    let wait_time = 5u64; // 고정 대기 시간
-                    // 재연결 이벤트를 생성합니다.
-                    let event = Event::Reconnecting(ReconnectingEvent {
-                        meta: EventMeta {
-                            received_time: Utc::now(),
-                        },
-                        attempt: attempts,
-                        wait_seconds: wait_time,
-                    });
-                    // 재연결 이벤트를 방송합니다.
-                    if state.event_tx.send(event).is_err() {
-                        break;
-                    }
-                    // 재연결을 시도하기 전에 잠시 대기합니다.
-                    tokio::time::sleep(Duration::from_secs(wait_time)).await;
-                }
-            },
+    // 세션 결과를 바탕으로 다음 행동을 결정합니다.
+    match try_connect_and_run_session(&mut state).await {
+        // 세션이 정상적으로 종료(Shutdown)되면, 메인 루프를 완전히 빠져나갑니다.
+        Ok(_) => {
+            state.event_tx.send(Event::Disconnected).ok();
+        }
+        Err(e) => {
+            // 그 외 모든 에러(네트워크, WebSocket 등)는 재연결을 시도합니다.
+            print!("[System] Connection error: {:?}. Retrying...\n", e);
         }
     }
 }
 
 /// 한 번의 완전한 연결 세션을 시도하고, 성공 또는 실패를 반환합니다.
 /// Ok(())는 정상적인 종료(Shutdown)를 의미합니다.
-async fn try_connect_and_run_session(state: &mut ConnectionLoopState, attempts: u32) -> Result<()> {
-    // 1. HTTP API로 최신 방송 정보 가져오기
-    let live_detail = state
-        .client
-        .get_live_details(&state.options.streamer_id)
-        .await?;
-    // 방송이 꺼져있다면, 에러를 반환합니다.
-    if !live_detail.is_streaming() {
-        return Err(Error::StreamOffline);
-    }
-
-    // 2. WebSocket 접속 URL 생성
-    let url = Url::parse(&format!(
-        "wss://{}:{}/Websocket/{}",
-        live_detail.channel.ch_domain.to_lowercase(),
-        live_detail.channel.ch_pt + 1,
-        state.options.streamer_id
-    ))?;
-
+async fn try_connect_and_run_session(state: &mut ConnectionLoopState) -> Result<()> {
+    // 1. WebSocket 접속 URL 생성
+    let url = Url::parse(&state.connection_url)?;
     print!("[System] Attempting to connect to WebSocket: {}\n", url);
 
     let mut request = url.into_client_request()?;
@@ -171,13 +156,13 @@ async fn try_connect_and_run_session(state: &mut ConnectionLoopState, attempts: 
         .headers_mut()
         .insert("Sec-WebSocket-Protocol", HeaderValue::from_static("chat"));
 
-    // 3. TLS 설정
+    // 2. TLS 설정
     let config = ClientConfig::builder()
         .dangerous()
         .with_custom_certificate_verifier(Arc::new(NoVerification)) // 필드가 없는 검증기 사용
         .with_no_client_auth();
 
-    // WebSocket 연결 시도
+    // - WebSocket 연결 시도
     let (ws_stream, _) = connect_async_tls_with_config(
         request,
         None,
@@ -187,27 +172,16 @@ async fn try_connect_and_run_session(state: &mut ConnectionLoopState, attempts: 
     .await
     .map_err(|e| Error::ConnectionFailed(e.to_string()))?;
 
-    // 3. 연결 성공 이벤트 생성
-    let event = if attempts == 0 {
-        Event::Connected
-    } else {
-        Event::Restored(RestoredEvent {
-            meta: EventMeta {
-                received_time: Utc::now(),
-            },
-            restored_at: Utc::now(),
-        })
-    };
     // 이벤트 전송
     state
         .event_tx
-        .send(event)
+        .send(Event::Connected)
         .map_err(|_| Error::InternalChannel("Event channel closed".into()))?;
 
     let (mut writer, mut reader) = ws_stream.split();
 
     // Formatter 인스턴스 생성
-    let formatter = ChatFormatter::new(live_detail);
+    let formatter = ChatFormatter::new(state.live_detail.clone());
 
     // 4. 초기 패킷 전송 (CONNECT)
     let connect_packet = formatter.format_message(MessageType::Connect);

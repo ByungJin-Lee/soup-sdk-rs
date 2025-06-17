@@ -13,7 +13,10 @@ pub enum Error {
     WebSocket(#[from] tokio_tungstenite::tungstenite::Error),
 
     #[error("JSON 파싱 실패: {0}")]
-    Json(reqwest::Error),
+    ResponseJson(reqwest::Error),
+
+    #[error("JSON 파싱 실패: {0}")]
+    SerdeJson(serde_json::Error),
 
     #[error("내부 채널 통신 오류: {0}")]
     InternalChannel(String),

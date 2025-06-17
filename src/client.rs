@@ -1,12 +1,16 @@
 use crate::constants::PLAYER_LIVE_API_URL;
 use crate::error::{Error, Result};
-use crate::models::LiveDetail;
-use reqwest::Client;
+use crate::models::{LiveDetail, LiveDetailToCheck};
+use futures_util::TryFutureExt;
+use reqwest::{Client, Response};
 
 #[derive(Debug)]
 pub struct SoopHttpClient {
     client: Client,
 }
+
+/// (is_live_detail, live_detail)
+type LiveDetailState = (bool, Option<LiveDetail>);
 
 impl SoopHttpClient {
     pub fn new() -> Self {
@@ -16,7 +20,26 @@ impl SoopHttpClient {
     }
 
     /// 스트리머 ID로 방송 상세 정보를 가져옵니다.
-    pub async fn get_live_details(&self, streamer_id: &str) -> Result<LiveDetail> {
+    pub async fn get_live_detail_state(&self, streamer_id: &str) -> Result<LiveDetailState> {
+        let resp = self.fetch_live_detail_response(streamer_id).await?;
+
+        let bytes = resp.bytes().await.map_err(|e| Error::ResponseJson(e))?;
+
+        let live_detail_to_check =
+            serde_json::from_slice::<LiveDetailToCheck>(&bytes).map_err(|e| Error::SerdeJson(e))?;
+
+        if !live_detail_to_check.is_streaming() {
+            return Ok((false, None));
+        }
+
+        let live_detail =
+            serde_json::from_slice::<LiveDetail>(&bytes).map_err(|e| Error::SerdeJson(e))?;
+
+        return Ok((true, Some(live_detail)));
+    }
+
+    /// 스트리머 ID로 방송 상세 정보 response를 가져옵니다.
+    async fn fetch_live_detail_response(&self, streamer_id: &str) -> Result<Response> {
         // x-www-form-urlencoded 형식의 본문을 만듭니다.
         let params = [("bid", streamer_id)];
 
@@ -34,11 +57,6 @@ impl SoopHttpClient {
             return Err(Error::Request(response.error_for_status().unwrap_err()));
         }
 
-        // JSON 응답에서 1차로 RESULT가 1인지 확인하고 동작하도록 수정
-
-        // JSON 응답을 LiveDetail 구조체로 파싱합니다.
-        let live_detail = response.json::<LiveDetail>().await.map_err(Error::Json)?;
-
-        Ok(live_detail)
+        Ok(response)
     }
 }
