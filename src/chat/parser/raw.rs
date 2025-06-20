@@ -5,7 +5,7 @@ use crate::chat::constants::{SEPARATOR_U8, message_codes::MessageCode};
 #[derive(Debug)]
 pub struct RawMessage {
     pub code: MessageCode,
-    pub red_code: u32,
+    pub _red_code: u32,
     pub body: Vec<String>,
     pub received_time: DateTime<Utc>,
 }
@@ -26,7 +26,7 @@ pub fn parse_message(data: &[u8]) -> Result<RawMessage, String> {
 
     Ok(RawMessage {
         code: header.code,
-        red_code: header.ret_code,
+        _red_code: header.ret_code,
         body: parse_body(body),
         received_time: now,
     })

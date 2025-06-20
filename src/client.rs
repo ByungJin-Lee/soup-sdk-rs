@@ -1,6 +1,6 @@
 use crate::constants::PLAYER_LIVE_API_URL;
 use crate::error::{Error, Result};
-use crate::models::{LiveDetail, LiveDetailToCheck};
+use crate::models::{LiveDetail, LiveDetailToCheck, StationResponse, StationState};
 use reqwest::{Client, Response};
 
 #[derive(Debug)]
@@ -35,6 +35,26 @@ impl SoopHttpClient {
             serde_json::from_slice::<LiveDetail>(&bytes).map_err(|e| Error::SerdeJson(e))?;
 
         return Ok((true, Some(live_detail)));
+    }
+
+    pub async fn get_station(&self, streamer_id: &str) -> Result<StationResponse> {
+        let request = self
+            .client
+            .get(format!(
+                "https://chapi.sooplive.co.kr/api/{}/station",
+                streamer_id
+            )) // URL 쿼리 파라미터 추가
+            .header("User-Agent", "Mozilla/5.0 (compatible; SoopClient/1.0)"); // User-Agent 헤더 설정
+
+        let response = request.send().await?;
+
+        if !response.status().is_success() {
+            return Err(Error::Request(response.error_for_status().unwrap_err()));
+        }
+
+        let station_response = response.json::<StationResponse>().await?;
+
+        return Ok(station_response);
     }
 
     /// 스트리머 ID로 방송 상세 정보 response를 가져옵니다.

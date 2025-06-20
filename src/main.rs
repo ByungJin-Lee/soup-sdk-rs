@@ -7,13 +7,15 @@ use soup_sdk::{
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    println!("--- SOOP Chat Client Example ---");
-
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "beemong".to_string(),
+        streamer_id: "yangdoki".to_string(),
     };
+
+    let ss = soop_client.get_station(&options.streamer_id).await?;
+
+    println!("{:?}", ss);
 
     // --- 2. 초기화 (생성) ---
     // 이 시점에서는 아무런 네트워크 활동도 일어나지 않습니다.
@@ -53,7 +55,7 @@ fn handle_event(event: Event) {
             println!("채팅     {:<10} {}", e.user.label, e.comment)
         }
         Event::Join(v) => {
-            // println!("{:?}", v)
+            println!("{:?}", v)
         }
         Event::Disconnected => {
             println!("정상 종료됨");
