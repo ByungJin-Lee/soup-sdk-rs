@@ -88,7 +88,7 @@ impl MessageHandler {
             message_codes::MANAGER_CHAT => self.handle_manager_message(message),
             message_codes::EMOTICON => self.handle_emoticon_message(message),
             message_codes::NOTIFICATION => self.handle_notification(message),
-            message_codes::DISCONNECT => self.handle_disconnect(message),
+            message_codes::BJ_STATE_CHANGE => self.handle_bj_state_change(message),
             message_codes::SLOW => self.handle_slow(message),
             message_codes::KICK_CANCEL => self.handle_kick_cancel(message),
             message_codes::SUBSCRIBE => self.handle_subscribe(message),
@@ -178,8 +178,8 @@ impl MessageHandler {
         None
     }
 
-    fn handle_disconnect(&self, _: RawMessage) -> Option<Vec<u8>> {
-        let _ = self.command_tx.try_send(Command::Shutdown);
+    fn handle_bj_state_change(&self, _: RawMessage) -> Option<Vec<u8>> {
+        let _ = self.broadcast(Event::BJStateChange);
         None
     }
 

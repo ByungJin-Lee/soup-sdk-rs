@@ -1,15 +1,13 @@
 use super::commands::Command;
-use super::events::{Event, ReconnectingEvent, RestoredEvent};
+use super::events::Event;
 use super::options::SoopChatOptions;
 use crate::SoopHttpClient;
 use crate::chat::commands::MessageType;
-use crate::chat::events::EventMeta;
 use crate::chat::formatter::ChatFormatter;
 use crate::chat::message::MessageHandler;
 use crate::chat::verification::NoVerification;
 use crate::error::{Error, Result};
 use crate::models::LiveDetail;
-use chrono::Utc;
 use futures_util::lock::Mutex;
 use futures_util::stream::SplitStream;
 use futures_util::{SinkExt, StreamExt, stream::SplitSink};

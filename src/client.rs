@@ -1,7 +1,6 @@
 use crate::constants::PLAYER_LIVE_API_URL;
 use crate::error::{Error, Result};
 use crate::models::{LiveDetail, LiveDetailToCheck};
-use futures_util::TryFutureExt;
 use reqwest::{Client, Response};
 
 #[derive(Debug)]

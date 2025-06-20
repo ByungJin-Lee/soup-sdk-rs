@@ -10,5 +10,9 @@ mod types;
 mod verification;
 
 pub use connection::SoopChatConnection;
-pub use events::{ChatEvent, DonationEvent, Event, ReconnectingEvent, RestoredEvent};
+pub use events::{
+    BattleMissionResultEvent, ChallengeMissionResultEvent, ChatEvent, ConnectedEvent,
+    DonationEvent, Event, EventMeta, FreezeEvent, MissionEvent, MissionTotalEvent, MuteEvent,
+    NotificationEvent, SimplifiedUserEvent, SlowEvent, SubscribeEvent, UserEvent,
+};
 pub use options::SoopChatOptions;

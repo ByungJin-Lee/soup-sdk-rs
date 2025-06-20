@@ -13,14 +13,11 @@ pub enum Event {
     // --- 생명 주기 관련 이벤트 ---
     /// 최초 연결 성공 시 발생
     Connected,
-    /// 연결이 끊어져 재연결 성공 시 발생
-    Restored(RestoredEvent),
-    /// 재연결을 시도하고 있음을 알림
-    Reconnecting(ReconnectingEvent),
     /// 연결이 완전히 종료되었을 때 발생
     Disconnected,
 
     // --- 채팅 관련 이벤트 ---
+    BJStateChange,
     /// 채팅 메시지가 수신되었을 때 발생합니다.
     Chat(ChatEvent),
     /// 후원 (텍스트, 영상, 애드벌룬)이 발생했을 때.
@@ -71,21 +68,6 @@ pub struct EventMeta {
 pub struct ConnectedEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct ReconnectingEvent {
-    #[serde(flatten)]
-    pub meta: EventMeta,
-    pub attempt: u32,
-    pub wait_seconds: u64,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct RestoredEvent {
-    #[serde(flatten)]
-    pub meta: EventMeta,
-    pub restored_at: DateTime<Utc>,
 }
 
 // --- 채팅 관련 이벤트 ---
