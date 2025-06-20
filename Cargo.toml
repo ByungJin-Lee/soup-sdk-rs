@@ -1,5 +1,7 @@
 [package]
 name = "soup-sdk"
+license = "MIT"
+description = "채팅 이벤트 수신 SDK"
 version = "0.1.0"
 edition = "2024"
 
