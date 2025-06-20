@@ -1,6 +1,9 @@
-use crate::constants::PLAYER_LIVE_API_URL;
+use crate::constants::{EMOTICON_API_URL, PLAYER_LIVE_API_URL};
 use crate::error::{Error, Result};
-use crate::models::{LiveDetail, LiveDetailToCheck, StationResponse, StationState};
+use crate::models::{
+    LiveDetail, LiveDetailToCheck, SignatureEmoticonData, SignatureEmoticonResponse,
+    StationResponse,
+};
 use reqwest::{Client, Response};
 
 #[derive(Debug)]
@@ -55,6 +58,28 @@ impl SoopHttpClient {
         let station_response = response.json::<StationResponse>().await?;
 
         return Ok(station_response);
+    }
+
+    pub async fn get_signature_emoticon(&self, streamer_id: &str) -> Result<SignatureEmoticonData> {
+        // x-www-form-urlencoded 형식의 본문을 만듭니다.
+        let params = [("szBjId", streamer_id), ("work", "list"), ("v", "tier")];
+
+        let request = self
+            .client
+            .post(EMOTICON_API_URL)
+            .header("Content-Type", "application/x-www-form-urlencoded") // 헤더 설정
+            .header("User-Agent", "Mozilla/5.0 (compatible; SoopClient/1.0)") // User-Agent 헤더 설정
+            .form(&params); // form-urlencoded 본문 추가
+
+        let response = request.send().await?;
+
+        if !response.status().is_success() {
+            return Err(Error::Request(response.error_for_status().unwrap_err()));
+        }
+
+        let emoticon_response = response.json::<SignatureEmoticonResponse>().await?;
+
+        return Ok(emoticon_response.data);
     }
 
     /// 스트리머 ID로 방송 상세 정보 response를 가져옵니다.

@@ -68,3 +68,29 @@ pub struct BroadState {
     #[serde(rename = "broad_title")]
     pub title: String,
 }
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SignatureEmoticonResponse {
+    #[serde(rename = "result")]
+    pub result: i32,
+    #[serde(rename = "data")]
+    pub data: SignatureEmoticonData,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SignatureEmoticonData {
+    #[serde(rename = "tier1")]
+    pub tier_1: Vec<Emoticon>,
+    #[serde(rename = "tier2")]
+    pub tier_2: Vec<Emoticon>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct Emoticon {
+    #[serde(rename = "title")]
+    pub title: String,
+    #[serde(rename = "pc_img")]
+    pub pc_img: String,
+    #[serde(rename = "mobile_img")]
+    pub mobile_img: String,
+}

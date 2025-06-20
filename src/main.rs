@@ -10,12 +10,8 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "yangdoki".to_string(),
+        streamer_id: "".to_string(),
     };
-
-    let ss = soop_client.get_station(&options.streamer_id).await?;
-
-    println!("{:?}", ss);
 
     // --- 2. 초기화 (생성) ---
     // 이 시점에서는 아무런 네트워크 활동도 일어나지 않습니다.
