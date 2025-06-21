@@ -1,26 +1,26 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_this_or_that::{as_bool, as_u64};
 // --- LiveDetail 관련 구조체들 ---
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct LiveDetail {
-    #[serde(rename = "CHANNEL")]
+    #[serde(rename = "CHANNEL", flatten)]
     pub channel: ChannelInfo,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct LiveDetailToCheck {
-    #[serde(rename = "CHANNEL")]
+    #[serde(rename = "CHANNEL", flatten)]
     pub channel: ChannelInfoToCheck,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ChannelInfoToCheck {
     #[serde(rename = "RESULT")]
     pub result: i32, // 1이면 방송 중, 0이면 방송 중 아님
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ChannelInfo {
     #[serde(rename = "RESULT")]
     pub result: i32, // 1이면 방송 중, 0이면 방송 중 아님
@@ -45,21 +45,21 @@ impl LiveDetailToCheck {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct StationResponse {
-    #[serde(rename = "station")]
+    #[serde(rename = "station", flatten)]
     pub station: StationState,
-    #[serde(rename = "broad")]
+    #[serde(rename = "broad", flatten)]
     pub broad: BroadState,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct StationState {
     #[serde(rename = "broad_start")]
     pub broad_start: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct BroadState {
     #[serde(rename = "is_password", deserialize_with = "as_bool")]
     pub is_password: bool,
@@ -69,7 +69,7 @@ pub struct BroadState {
     pub title: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SignatureEmoticonResponse {
     #[serde(rename = "result")]
     pub result: i32,
@@ -77,7 +77,7 @@ pub struct SignatureEmoticonResponse {
     pub data: SignatureEmoticonData,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct SignatureEmoticonData {
     #[serde(rename = "tier1")]
     pub tier_1: Vec<Emoticon>,
@@ -85,7 +85,7 @@ pub struct SignatureEmoticonData {
     pub tier_2: Vec<Emoticon>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Emoticon {
     #[serde(rename = "title")]
     pub title: String,
