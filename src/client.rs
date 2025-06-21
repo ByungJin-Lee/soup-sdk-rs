@@ -1,8 +1,8 @@
 use crate::constants::{EMOTICON_API_URL, PLAYER_LIVE_API_URL};
 use crate::error::{Error, Result};
 use crate::models::{
-    LiveDetail, LiveDetailToCheck, SignatureEmoticonData, SignatureEmoticonResponse,
-    StationResponse,
+    LiveDetail, LiveDetailToCheck, RawLiveDetail, RawStation, SignatureEmoticonData,
+    SignatureEmoticonResponse, Station,
 };
 use reqwest::{Client, Response};
 
@@ -35,12 +35,23 @@ impl SoopHttpClient {
         }
 
         let live_detail =
-            serde_json::from_slice::<LiveDetail>(&bytes).map_err(|e| Error::SerdeJson(e))?;
+            serde_json::from_slice::<RawLiveDetail>(&bytes).map_err(|e| Error::SerdeJson(e))?;
 
-        return Ok((true, Some(live_detail)));
+        return Ok((
+            true,
+            Some(LiveDetail {
+                is_live: live_detail_to_check.is_streaming(),
+                ch_domain: live_detail.channel.ch_domain,
+                ch_pt: live_detail.channel.ch_pt,
+                ch_no: live_detail.channel.chat_no,
+                streamer_nick: live_detail.channel.bj_nick,
+                title: live_detail.channel.title,
+                categories: live_detail.channel.categories,
+            }),
+        ));
     }
 
-    pub async fn get_station(&self, streamer_id: &str) -> Result<StationResponse> {
+    pub async fn get_station(&self, streamer_id: &str) -> Result<Station> {
         let request = self
             .client
             .get(format!(
@@ -55,9 +66,14 @@ impl SoopHttpClient {
             return Err(Error::Request(response.error_for_status().unwrap_err()));
         }
 
-        let station_response = response.json::<StationResponse>().await?;
+        let station_response = response.json::<RawStation>().await?;
 
-        return Ok(station_response);
+        return Ok(Station {
+            broad_start: station_response.station.broad_start,
+            is_password: station_response.broad.is_password,
+            viewer_count: station_response.broad.viewer_count,
+            title: station_response.broad.title,
+        });
     }
 
     pub async fn get_signature_emoticon(&self, streamer_id: &str) -> Result<SignatureEmoticonData> {

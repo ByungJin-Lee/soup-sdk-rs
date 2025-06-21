@@ -34,7 +34,7 @@ impl ChatFormatter {
         format!(
             "{}{}{}",
             SEPARATOR,
-            self.live_detail.channel.chat_no,
+            self.live_detail.ch_no,
             SEPARATOR.to_string().repeat(5)
         )
     }

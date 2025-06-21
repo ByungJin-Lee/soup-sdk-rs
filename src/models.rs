@@ -3,14 +3,25 @@ use serde_this_or_that::{as_bool, as_u64};
 // --- LiveDetail 관련 구조체들 ---
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct LiveDetail {
-    #[serde(rename = "CHANNEL", flatten)]
+pub struct RawLiveDetail {
+    #[serde(rename = "CHANNEL")]
     pub channel: ChannelInfo,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct LiveDetail {
+    pub is_live: bool,
+    pub ch_domain: String,
+    pub ch_pt: u64,
+    pub ch_no: String,
+    pub streamer_nick: String,
+    pub title: String,
+    pub categories: Vec<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct LiveDetailToCheck {
-    #[serde(rename = "CHANNEL", flatten)]
+    #[serde(rename = "CHANNEL")]
     pub channel: ChannelInfoToCheck,
 }
 
@@ -46,11 +57,19 @@ impl LiveDetailToCheck {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct StationResponse {
-    #[serde(rename = "station", flatten)]
+pub struct RawStation {
+    #[serde(rename = "station")]
     pub station: StationState,
-    #[serde(rename = "broad", flatten)]
+    #[serde(rename = "broad")]
     pub broad: BroadState,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct Station {
+    pub broad_start: String,
+    pub is_password: bool,
+    pub viewer_count: u64,
+    pub title: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

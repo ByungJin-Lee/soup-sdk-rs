@@ -72,8 +72,8 @@ impl SoopChatConnection {
     fn make_connection_url(&self, live_detail: &LiveDetail) -> String {
         format!(
             "wss://{}:{}/Websocket/{}",
-            live_detail.channel.ch_domain.to_lowercase(),
-            live_detail.channel.ch_pt + 1,
+            live_detail.ch_domain.to_lowercase(),
+            live_detail.ch_pt + 1,
             self.options.streamer_id
         )
     }
