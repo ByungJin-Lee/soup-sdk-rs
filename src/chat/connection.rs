@@ -44,9 +44,9 @@ struct ConnectionLoopState {
 impl SoopChatConnection {
     /// 새로운 SOOP 채팅 연결을 시작합니다.
     pub fn new(soop_http_client: Arc<SoopHttpClient>, options: SoopChatOptions) -> Result<Self> {
-        rustls::crypto::aws_lc_rs::default_provider()
-            .install_default()
-            .expect("Failed to install default crypto provider");
+        // rustls::crypto::aws_lc_rs::default_provider()
+        //     .install_default()
+        //     .expect("Failed to install default crypto provider");
         // 1. 통신 채널 생성
         // command 채널: 여러 곳에서 명령을 보낼 수 있지만, 받는 곳은 하나(mpsc)
         let (command_tx, command_rx) = mpsc::channel(32);
