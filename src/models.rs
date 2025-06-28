@@ -111,12 +111,11 @@ pub struct SignatureEmoticonData {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Emoticon {
     #[serde(rename = "title")]
     pub title: String,
-    #[serde(rename = "pc_img")]
+    #[serde(rename(serialize = "pcImg", deserialize = "pc_img"))]
     pub pc_img: String,
-    #[serde(rename = "mobile_img")]
+    #[serde(rename(serialize = "mobileImg", deserialize = "mobile_img"))]
     pub mobile_img: String,
 }

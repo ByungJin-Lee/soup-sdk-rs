@@ -2,7 +2,7 @@
 name = "soup-sdk"
 license = "MIT"
 description = "채팅 이벤트 수신 SDK"
-version = "0.1.6"
+version = "0.1.71"
 edition = "2024"
 
 [dependencies]
