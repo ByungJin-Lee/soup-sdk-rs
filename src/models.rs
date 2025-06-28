@@ -9,6 +9,7 @@ pub struct RawLiveDetail {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LiveDetail {
     pub is_live: bool,
     pub ch_domain: String,
@@ -32,6 +33,7 @@ pub struct ChannelInfoToCheck {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ChannelInfo {
     #[serde(rename = "RESULT")]
     pub result: i32, // 1이면 방송 중, 0이면 방송 중 아님
@@ -65,6 +67,7 @@ pub struct RawStation {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Station {
     pub broad_start: String,
     pub is_password: bool,
@@ -73,12 +76,14 @@ pub struct Station {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct StationState {
     #[serde(rename = "broad_start")]
     pub broad_start: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BroadState {
     #[serde(rename = "is_password", deserialize_with = "as_bool")]
     pub is_password: bool,
@@ -97,6 +102,7 @@ pub struct SignatureEmoticonResponse {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SignatureEmoticonData {
     #[serde(rename = "tier1")]
     pub tier_1: Vec<Emoticon>,
@@ -105,6 +111,7 @@ pub struct SignatureEmoticonData {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Emoticon {
     #[serde(rename = "title")]
     pub title: String,

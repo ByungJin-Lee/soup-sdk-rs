@@ -7,6 +7,7 @@ pub struct UserSubscribe {
 }
 
 #[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct UserStatus {
     /// 0인 경우 팔로우 아님, 1-2인 경우 티어에 따라 다름
     pub follow: u8,

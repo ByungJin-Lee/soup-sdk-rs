@@ -73,6 +73,7 @@ pub struct ConnectedEvent {
 // --- 채팅 관련 이벤트 ---
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ChatEvent {
     /// 공통 속성 영역
     #[serde(flatten)]
@@ -87,6 +88,7 @@ pub struct ChatEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DonationEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -99,6 +101,7 @@ pub struct DonationEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MissionEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -109,6 +112,7 @@ pub struct MissionEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MissionTotalEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -117,6 +121,7 @@ pub struct MissionTotalEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ChallengeMissionResultEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -125,6 +130,7 @@ pub struct ChallengeMissionResultEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BattleMissionResultEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -134,6 +140,7 @@ pub struct BattleMissionResultEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SubscribeEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -161,6 +168,7 @@ pub struct UserEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SimplifiedUserEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -168,6 +176,7 @@ pub struct SimplifiedUserEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct FreezeEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -178,6 +187,7 @@ pub struct FreezeEvent {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MuteEvent {
     #[serde(flatten)]
     pub meta: EventMeta,

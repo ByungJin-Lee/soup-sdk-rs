@@ -7,12 +7,14 @@ pub struct UserFlags {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AbstractMissionData {
     #[serde(rename = "type")]
     pub message_type: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct MissionGiftPayload {
     #[serde(rename = "user_id")]
     pub user_id: String,
