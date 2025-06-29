@@ -52,15 +52,20 @@ fn parse_body(body: &[u8]) -> Vec<String> {
     // 첫 번째 바이트를 건너뛴 슬라이스를 가져옵니다.
     let data_to_process = &body[1..];
 
+    // 구분자 개수를 미리 세어서 Vec 용량을 할당합니다.
+    let separator_count = data_to_process.iter().filter(|&&b| b == SEPARATOR_U8).count();
+    let mut result = Vec::with_capacity(separator_count + 1);
+
     // 데이터를 구분자로 분할하고, 각 조각을 문자열로 변환한 뒤, 벡터로 수집합니다.
-    data_to_process
-        .split(|&byte| byte == SEPARATOR_U8)
-        .map(|byte_part| {
-            // String::from_utf8_lossy는 유효하지 않은 UTF-8 시퀀스를
-            // 문자로 대체하여 안전하게 문자열을 생성합니다.
-            String::from_utf8_lossy(byte_part).into_owned()
-        })
-        .collect()
+    for byte_part in data_to_process.split(|&byte| byte == SEPARATOR_U8) {
+        // String::from_utf8_lossy는 유효하지 않은 UTF-8 시퀀스를
+        // 문자로 대체하여 안전하게 문자열을 생성합니다.
+        // Cow::Borrowed인 경우 불필요한 할당을 피합니다.
+        let cow_str = String::from_utf8_lossy(byte_part);
+        result.push(cow_str.into_owned());
+    }
+    
+    result
 }
 
 fn parse_bytes_to_u32(bytes: &[u8]) -> u32 {

@@ -12,8 +12,8 @@ use futures_util::lock::Mutex;
 use futures_util::stream::SplitStream;
 use futures_util::{SinkExt, StreamExt, stream::SplitSink};
 use reqwest::header::HeaderValue;
-use rustls::crypto::CryptoProvider;
 use rustls::ClientConfig;
+use rustls::crypto::CryptoProvider;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::net::TcpStream;
@@ -55,7 +55,7 @@ impl SoopChatConnection {
         // command 채널: 여러 곳에서 명령을 보낼 수 있지만, 받는 곳은 하나(mpsc)
         let (command_tx, command_rx) = mpsc::channel(32);
         // event 채널: 보내는 곳은 하나지만, 여러 곳에서 구독하여 들을 수 있음(broadcast)
-        let (event_tx, _) = broadcast::channel(128);
+        let (event_tx, _) = broadcast::channel(1024);
         // 2. 사용자가 제어할 수 있는 핸들만 반환
         Ok(Self {
             command_tx,
