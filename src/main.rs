@@ -10,7 +10,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "htvv2i".to_string(),
+        streamer_id: "gosegu2".to_string(),
     };
 
     let (_, ooo) = soop_client

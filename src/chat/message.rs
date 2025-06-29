@@ -71,7 +71,7 @@ impl MessageHandler {
     fn broadcast(&self, event: Event) -> Result<()> {
         self.event_tx
             .send(event)
-            .map_err(|_| Error::InternalChannel("Failed to send event".into()))?;
+            .map_err(|e| Error::InternalChannel(e.to_string()))?;
         Ok(())
     }
 
