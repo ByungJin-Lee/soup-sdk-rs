@@ -13,6 +13,7 @@ use crate::{
                 AbstractMissionData, BattleMissionResultPayload, ChallengeMissionResultPayload,
                 MissionGiftPayload, MissionGiftTotalPayload,
             },
+            util::normalize_user_id,
         },
         types::{MissionParser, MissionType},
     },
@@ -55,7 +56,7 @@ fn parse_gift_event(raw: &RawMessage, body: &str, message_type: &str) -> Result<
         meta: EventMeta {
             received_time: raw.received_time,
         },
-        from: p.user_id,
+        from: normalize_user_id(&p.user_id),
         from_label: p.label,
         amount: p.amount as u32,
         mission_type: if message_type == "CHALLENGE_GIFT" {

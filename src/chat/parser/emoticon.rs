@@ -1,7 +1,7 @@
 use crate::chat::{
     ChatEvent,
     events::EventMeta,
-    parser::{raw::RawMessage, user::parse_user_status},
+    parser::{raw::RawMessage, user::parse_user_status, util::normalize_user_id},
     types::{ChatType, Emoticon, User, UserSubscribe},
 };
 
@@ -16,7 +16,7 @@ pub fn parse_emoticon_event(raw: RawMessage) -> ChatEvent {
         chat_type: ChatType::Emoticon,
         comment: body[1].clone().replace("\r", ""),
         user: User {
-            id: body[5].clone(),
+            id: normalize_user_id(&body[5]),
             label: body[6].clone(),
             status: parse_user_status(&body[7]),
             subscribe: Some(sub),

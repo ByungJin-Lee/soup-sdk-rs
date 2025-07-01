@@ -1,6 +1,6 @@
 use crate::chat::{
     events::{EventMeta, SubscribeEvent},
-    parser::raw::RawMessage,
+    parser::{raw::RawMessage, util::normalize_user_id},
 };
 
 pub fn parse_subscribe_event(raw: RawMessage) -> SubscribeEvent {
@@ -10,7 +10,7 @@ pub fn parse_subscribe_event(raw: RawMessage) -> SubscribeEvent {
         meta: EventMeta {
             received_time: raw.received_time,
         },
-        user_id: body[2].clone(),
+        user_id: normalize_user_id(&body[2]),
         label: body[3].clone(),
         tier: body[7].parse::<u32>().unwrap_or(0),
         // 갱신이 아닌 경우는 0으로 할당
@@ -25,7 +25,7 @@ pub fn parse_subscribe_renew_event(raw: RawMessage) -> SubscribeEvent {
         meta: EventMeta {
             received_time: raw.received_time,
         },
-        user_id: body[1].clone(),
+        user_id: normalize_user_id(&body[1]),
         label: body[2].clone(),
         tier: body[7].parse::<u32>().unwrap_or(0),
         // 갱신이 아닌 경우는 0으로 할당

@@ -2,7 +2,7 @@ use crate::chat::{
     ChatEvent,
     constants::chat_message_fields,
     events::EventMeta,
-    parser::{raw::RawMessage, user::parse_user_status},
+    parser::{raw::RawMessage, user::parse_user_status, util::normalize_user_id},
     types::{ChatType, User, UserSubscribe},
 };
 
@@ -17,7 +17,7 @@ pub fn parse_chat_event(raw: RawMessage) -> ChatEvent {
         chat_type: ChatType::Common,
         comment: body[chat_message_fields::CONTENT].clone().replace("\r", ""),
         user: User {
-            id: body[chat_message_fields::USER_ID].clone(),
+            id: normalize_user_id(&body[chat_message_fields::USER_ID]),
             label: body[chat_message_fields::USER_NICK].clone(),
             status: parse_user_status(&body[chat_message_fields::FLAGS]),
             subscribe: Some(sub),
@@ -37,7 +37,7 @@ pub fn parse_manager_chat_event(raw: RawMessage) -> ChatEvent {
         chat_type: ChatType::Manager,
         comment: body[chat_message_fields::CONTENT].clone().replace("\r", ""),
         user: User {
-            id: body[chat_message_fields::USER_ID].clone(),
+            id: normalize_user_id(&body[chat_message_fields::USER_ID]),
             label: body[4].clone(),
             status: parse_user_status(&body[5]),
             subscribe: None,

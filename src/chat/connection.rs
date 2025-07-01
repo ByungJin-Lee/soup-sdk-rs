@@ -13,7 +13,6 @@ use futures_util::stream::SplitStream;
 use futures_util::{SinkExt, StreamExt, stream::SplitSink};
 use reqwest::header::HeaderValue;
 use rustls::ClientConfig;
-use rustls::ClientConfig;
 use rustls::crypto::CryptoProvider;
 use std::sync::Arc;
 use std::time::Duration;

@@ -10,7 +10,7 @@ async fn main() -> anyhow::Result<()> {
     // --- 1. 의존성 생성 ---
     let soop_client = Arc::new(SoopHttpClient::new());
     let options = SoopChatOptions {
-        streamer_id: "gosegu2".to_string(),
+        streamer_id: "cotton1217".to_string(),
     };
 
     let (_, ooo) = soop_client
@@ -54,7 +54,7 @@ async fn main() -> anyhow::Result<()> {
 fn handle_event(event: Event) {
     match event {
         Event::Chat(e) => {
-            println!("채팅     {:<10} {}", e.user.label, e.comment)
+            println!("채팅     {:<10} {}", e.user.id, e.comment)
         }
         Event::Join(v) => {
             // println!("{:?}", v)

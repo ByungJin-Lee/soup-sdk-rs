@@ -1,6 +1,6 @@
 use crate::chat::{
     events::{EventMeta, UserEvent},
-    parser::{raw::RawMessage, user::parse_user_status},
+    parser::{raw::RawMessage, user::parse_user_status, util::normalize_user_id},
     types::User,
 };
 
@@ -22,7 +22,7 @@ pub fn parse_exit_event(raw: RawMessage) -> Option<(bool, UserEvent)> {
                 received_time: raw.received_time,
             },
             user: User {
-                id: body[1].clone(),
+                id: normalize_user_id(&body[1]),
                 label: body[2].clone(),
                 status: parse_user_status(&body[5]),
                 subscribe: None,
