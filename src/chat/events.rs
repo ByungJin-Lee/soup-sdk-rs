@@ -1,5 +1,13 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Serialize, Serializer};
+use std::sync::Arc;
+
+fn serialize_arc_bytes<S>(data: &Arc<[u8]>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    serializer.serialize_bytes(data)
+}
 
 use crate::chat::{
     constants::message_codes::MessageCode,
@@ -54,7 +62,8 @@ pub enum Event {
     // 슬로우 이벤트
     Slow(SlowEvent),
     /// 직접 처리
-    Raw(Vec<u8>), // 원시 데이터로 처리할 수 있는 이벤트
+    #[serde(serialize_with = "serialize_arc_bytes")]
+    Raw(Arc<[u8]>), // 원시 데이터로 처리할 수 있는 이벤트
 }
 
 #[derive(Debug, Clone, Serialize)]

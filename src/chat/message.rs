@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use tokio::sync::{broadcast, mpsc};
 
 use crate::{
@@ -53,8 +54,10 @@ impl MessageHandler {
     }
     /// 메시지를 처리하고 이벤트를 전송합니다.
     pub fn handle(&self, raw: Vec<u8>) -> Result<Option<Vec<u8>>> {
+        // Arc로 감싸서 클로닝 오버헤드를 줄입니다.
+        let raw_arc: Arc<[u8]> = raw.clone().into();
         // Raw 메시지 처리
-        self.broadcast(Event::Raw(raw.clone()))?;
+        self.broadcast(Event::Raw(raw_arc))?;
         // 메시지 파싱
         let ret = match parse_message(&raw) {
             Ok(message) => self.handle_message(message),

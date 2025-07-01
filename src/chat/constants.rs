@@ -7,6 +7,10 @@ pub const ELEMENT_START: char = '\x11';
 pub const ELEMENT_END: char = '\x12';
 pub const SPACE: char = '\x06';
 
+// --- 사전 계산된 SEPARATOR 패턴들 ---
+pub const SEPARATOR_3_TIMES: &str = "\x0c\x0c\x0c"; // SEPARATOR * 3
+pub const SEPARATOR_5_TIMES: &str = "\x0c\x0c\x0c\x0c\x0c"; // SEPARATOR * 5
+
 // --- 채팅 명령 코드 ---
 pub mod message_codes {
     pub type MessageCode = u32;

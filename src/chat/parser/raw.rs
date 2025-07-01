@@ -58,19 +58,27 @@ fn parse_body(body: &[u8]) -> Vec<String> {
 
     // 데이터를 구분자로 분할하고, 각 조각을 문자열로 변환한 뒤, 벡터로 수집합니다.
     for byte_part in data_to_process.split(|&byte| byte == SEPARATOR_U8) {
-        // String::from_utf8_lossy는 유효하지 않은 UTF-8 시퀀스를
-        // 문자로 대체하여 안전하게 문자열을 생성합니다.
-        // Cow::Borrowed인 경우 불필요한 할당을 피합니다.
-        let cow_str = String::from_utf8_lossy(byte_part);
-        result.push(cow_str.into_owned());
+        // UTF-8 유효성을 먼저 확인하여 불필요한 할당을 피합니다.
+        match std::str::from_utf8(byte_part) {
+            Ok(s) => result.push(s.to_string()),
+            Err(_) => {
+                // 유효하지 않은 UTF-8인 경우에만 lossy conversion 사용
+                let cow_str = String::from_utf8_lossy(byte_part);
+                result.push(cow_str.into_owned());
+            }
+        }
     }
     
     result
 }
 
 fn parse_bytes_to_u32(bytes: &[u8]) -> u32 {
-    String::from_utf8_lossy(bytes)
-        .to_string()
-        .parse::<u32>()
-        .unwrap_or(0)
+    // UTF-8 바이트를 직접 파싱하여 불필요한 String 할당을 피합니다.
+    match std::str::from_utf8(bytes) {
+        Ok(s) => s.parse::<u32>().unwrap_or(0),
+        Err(_) => {
+            // 유효하지 않은 UTF-8인 경우에만 lossy conversion 사용
+            String::from_utf8_lossy(bytes).parse::<u32>().unwrap_or(0)
+        }
+    }
 }

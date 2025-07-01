@@ -27,6 +27,7 @@ impl SoopHttpClient {
 
         let bytes = resp.bytes().await.map_err(|e| Error::ResponseJson(e))?;
 
+        // bytes를 공유해서 두 번의 파싱을 수행하되, bytes 복사는 피합니다
         let live_detail_to_check =
             serde_json::from_slice::<LiveDetailToCheck>(&bytes).map_err(|e| Error::SerdeJson(e))?;
 
@@ -34,6 +35,7 @@ impl SoopHttpClient {
             return Ok((false, None));
         }
 
+        // 방송 중인 경우에만 전체 JSON을 파싱합니다
         let live_detail =
             serde_json::from_slice::<RawLiveDetail>(&bytes).map_err(|e| Error::SerdeJson(e))?;
 

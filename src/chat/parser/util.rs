@@ -2,15 +2,22 @@ pub fn is(flags: u32, flag: u32) -> bool {
     flags & flag == flag
 }
 
+#[inline]
 pub fn normalize_user_id(user_id: &str) -> String {
     let len = user_id.len();
     if len >= 3 {
         let bytes = user_id.as_bytes();
-        if bytes[len - 1] == b')' && bytes[len - 3] == b'(' && bytes[len - 2].is_ascii_digit() {
+        // 가장 빠른 검사부터 수행: 마지막 문자 → 숫자 확인 → 괄호 확인
+        if bytes[len - 1] == b')' && bytes[len - 2].is_ascii_digit() && bytes[len - 3] == b'(' {
             return user_id[..len - 3].to_string();
         }
     }
     user_id.to_string()
+}
+
+#[inline]
+pub fn parse_u32_or_default(s: &str) -> u32 {
+    s.parse::<u32>().unwrap_or(0)
 }
 
 #[cfg(test)]

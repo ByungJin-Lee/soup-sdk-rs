@@ -1,7 +1,7 @@
 use crate::{
     chat::{
         commands::MessageType,
-        constants::{SEPARATOR, STARTER_VEC},
+        constants::{SEPARATOR, SEPARATOR_3_TIMES, SEPARATOR_5_TIMES, STARTER_VEC},
     },
     models::LiveDetail,
 };
@@ -27,7 +27,7 @@ impl ChatFormatter {
     }
 
     fn format_connect_packet(&self) -> String {
-        format!("{}16{}", SEPARATOR.to_string().repeat(3), SEPARATOR)
+        format!("{}16{}", SEPARATOR_3_TIMES, SEPARATOR)
     }
 
     fn format_join_packet(&self) -> String {
@@ -35,7 +35,7 @@ impl ChatFormatter {
             "{}{}{}",
             SEPARATOR,
             self.live_detail.ch_no,
-            SEPARATOR.to_string().repeat(5)
+            SEPARATOR_5_TIMES
         )
     }
 }
