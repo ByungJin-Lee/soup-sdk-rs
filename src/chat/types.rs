@@ -1,12 +1,12 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct UserSubscribe {
     pub acc: u32,
     pub current: u32,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UserStatus {
     /// 0인 경우 팔로우 아님, 1-2인 경우 티어에 따라 다름
@@ -18,7 +18,7 @@ pub struct UserStatus {
     pub is_supporter: bool,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct User {
     pub id: String,
     pub label: String,
@@ -43,14 +43,14 @@ pub struct Emoticon {
     pub version: String,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub enum DonationType {
     Balloon,
     ADBalloon,
     VODBalloon,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub enum MissionType {
     Battle,
     Challenge,
