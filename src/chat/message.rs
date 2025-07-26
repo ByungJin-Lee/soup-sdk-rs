@@ -233,9 +233,9 @@ impl MessageHandler {
     fn handle_exit(&self, message: RawMessage) -> Option<Vec<u8>> {
         if let Some((is_kick, e)) = parse_exit_event(message) {
             if is_kick {
-                let _ = self.broadcast(Event::Exit(e));
-            } else {
                 let _ = self.broadcast(Event::Kick(e));
+            } else {
+                let _ = self.broadcast(Event::Exit(e));
             };
         }
         None
