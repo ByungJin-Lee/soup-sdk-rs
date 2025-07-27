@@ -32,6 +32,9 @@ pub enum Error {
 
     #[error("이미 시작된 연결입니다.")]
     AlreadyStarted,
+
+    #[error("API 오류: {0}")]
+    ApiError(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

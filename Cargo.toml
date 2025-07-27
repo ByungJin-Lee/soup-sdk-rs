@@ -19,3 +19,4 @@ anyhow = "1.0"
 serde-this-or-that = "0.5.0"
 rustls = { version = "0.23.27", features = ["ring"] }
 tokio-rustls = "0.26.2"
+quick-xml = "0.38.0"

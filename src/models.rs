@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_this_or_that::{as_bool, as_u64};
+use crate::error::Result;
 // --- LiveDetail 관련 구조체들 ---
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -49,6 +50,46 @@ pub struct ChannelInfo {
     pub title: String,
     #[serde(rename = "CATEGORY_TAGS")]
     pub categories: Vec<String>,
+}
+
+impl RawVODResponse {
+    pub fn into_vods(self) -> Vec<VOD> {
+        self.data
+            .into_iter()
+            .filter(|vod| vod.auth_no == 101)
+            .map(|vod| VOD {
+                id: vod.title_no,
+                title: vod.title_name,
+                thumbnail_url: format!("https:{}", vod.ucc.thumb),
+                duration: vod.ucc.total_file_duration,
+            })
+            .collect()
+    }
+}
+
+impl RawVODDetailResponse {
+    pub fn into_vod_detail(self) -> Result<VODDetail> {
+        if self.result != 1 {
+            return Err(crate::error::Error::ApiError("VOD not found".to_string()));
+        }
+        
+        let data = self.data.ok_or_else(|| crate::error::Error::ApiError("VOD data not available".to_string()))?;
+        
+        Ok(VODDetail {
+            id: data.title_no.to_string(),
+            title: data.full_title,
+            channel_id: data.bj_id,
+            broad_start: data.broad_start,
+            files: data.files.into_iter().map(|file| VODFile {
+                id: file.idx,
+                order: file.file_order,
+                file_key: file.file_info_key,
+                file_start: file.file_start,
+                chat: file.chat,
+                duration: file.duration,
+            }).collect(),
+        })
+    }
 }
 
 impl LiveDetailToCheck {
@@ -118,4 +159,75 @@ pub struct Emoticon {
     pub pc_img: String,
     #[serde(rename(serialize = "mobileImg", deserialize = "mobile_img"))]
     pub mobile_img: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct VOD {
+    pub id: u64,
+    pub title: String,
+    pub thumbnail_url: String,
+    pub duration: u64,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct VODDetail {
+    pub id: String,
+    pub title: String,
+    pub channel_id: String,
+    pub broad_start: String,
+    pub files: Vec<VODFile>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct VODFile {
+    pub id: u64,
+    pub order: u32,
+    pub file_key: String,
+    pub file_start: String,
+    pub chat: String,
+    pub duration: u64,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RawVODResponse {
+    data: Vec<RawVOD>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RawVOD {
+    title_no: u64,
+    title_name: String,
+    auth_no: u32,
+    ucc: RawVODUcc,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RawVODUcc {
+    thumb: String,
+    total_file_duration: u64,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RawVODDetailResponse {
+    result: i32,
+    data: Option<RawVODDetailData>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RawVODDetailData {
+    title_no: u64,
+    full_title: String,
+    bj_id: String,
+    broad_start: String,
+    files: Vec<RawVODDetailFile>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct RawVODDetailFile {
+    idx: u64,
+    file_order: u32,
+    file_info_key: String,
+    file_start: String,
+    chat: String,
+    duration: u64,
 }

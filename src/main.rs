@@ -2,13 +2,15 @@ use std::sync::Arc;
 
 use soup_sdk::{
     SoopHttpClient,
-    chat::{Event, SoopChatConnection, options::SoopChatOptions},
+    chat::{Event, SoopChatConnection, SoopChatOptions},
 };
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // --- 1. 의존성 생성 ---
+    // --- VOD API 테스트 ---
     let soop_client = Arc::new(SoopHttpClient::new());
+    let streamer_id = "jingburger1";
+
     let options = SoopChatOptions {
         streamer_id: "cotton1217".to_string(),
     };
