@@ -28,14 +28,14 @@ pub struct User {
     pub subscribe: Option<UserSubscribe>,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub enum ChatType {
     Manager,
     Common,
     Emoticon,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct Emoticon {
     pub id: String,
     pub number: String,
@@ -56,7 +56,7 @@ pub enum MissionType {
     Challenge,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Clone, Deserialize)]
 pub enum MissionParser {
     Mission,
     MissionTotal,

@@ -1542,7 +1542,7 @@ dependencies = [
 
 [[package]]
 name = "soup-sdk"
-version = "0.1.93"
+version = "0.1.94"
 dependencies = [
  "anyhow",
  "chrono",
