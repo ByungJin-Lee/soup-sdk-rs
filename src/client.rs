@@ -2,9 +2,12 @@ use crate::chat::events::Event;
 use crate::constants::{EMOTICON_API_URL, PLAYER_LIVE_API_URL};
 use crate::error::{Error, Result};
 use crate::models::{
-    parse_soop_timestamp, LiveDetail, LiveDetailToCheck, RawLiveDetail, RawStation, RawVODDetailResponse, RawVODResponse, SignatureEmoticonData, SignatureEmoticonResponse, Station, VODDetail, VODFile, VOD
+    LiveDetail, LiveDetailToCheck, RawLiveDetail, RawStation, RawVODDetailResponse, RawVODResponse,
+    SignatureEmoticonData, SignatureEmoticonResponse, Station, VOD, VODDetail, VODFile,
+    parse_soop_timestamp,
 };
 use crate::vod_chat_parser::parse_vod_chat_xml_with_start_time;
+use futures_util::TryFutureExt;
 use reqwest::{Client, Response};
 
 #[derive(Debug)]
@@ -125,7 +128,7 @@ impl SoopHttpClient {
 
     pub async fn get_vod_list(&self, streamer_id: &str, page: u32) -> Result<Vec<VOD>> {
         let url = format!(
-            "https://chapi.sooplive.co.kr/api/{}/vods/all?page={}&per_page=60&orderby=reg_date&field=title%2Ccontents&created=false",
+            "https://chapi.sooplive.co.kr/api/{}/vods/review?page={}&per_page=60&orderby=reg_date&field=title%2Ccontents&created=false",
             streamer_id, page
         );
 
@@ -220,7 +223,6 @@ impl SoopHttpClient {
     pub async fn get_full_vod_chat(&self, vod_id: u64) -> Result<Vec<Event>> {
         let vod_detail = self.get_vod_detail(vod_id).await?;
         let mut all_events = Vec::new();
-
 
         for (_, file) in vod_detail.files.iter().enumerate() {
             let mut file_events = self

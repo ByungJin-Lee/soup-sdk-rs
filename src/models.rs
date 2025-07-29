@@ -1,7 +1,7 @@
+use crate::error::Result;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_this_or_that::{as_bool, as_u64};
-use crate::error::Result;
 // --- LiveDetail 관련 구조체들 ---
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -58,14 +58,18 @@ impl RawVODResponse {
         self.data
             .into_iter()
             .filter(|vod| vod.auth_no == 101)
-            .map(|vod| {
-                VOD {
-                    id: vod.title_no,
-                    title: vod.title_name,
-                    thumbnail_url: format!("https:{}", vod.ucc.thumb),
-                    duration: vod.ucc.total_file_duration,
-                    reg_date: parse_soop_timestamp(&vod.reg_date),
-                }})
+            .map(|vod| VOD {
+                id: vod.title_no,
+                title: vod.title_name,
+                thumbnail_url: vod
+                    .ucc
+                    .thumb
+                    .as_ref()
+                    .map(|s| format!("https:{}", s))
+                    .unwrap_or_default(),
+                duration: vod.ucc.total_file_duration,
+                reg_date: parse_soop_timestamp(&vod.reg_date),
+            })
             .collect()
     }
 }
@@ -75,22 +79,28 @@ impl RawVODDetailResponse {
         if self.result != 1 {
             return Err(crate::error::Error::ApiError("VOD not found".to_string()));
         }
-        
-        let data = self.data.ok_or_else(|| crate::error::Error::ApiError("VOD data not available".to_string()))?;
-        
+
+        let data = self
+            .data
+            .ok_or_else(|| crate::error::Error::ApiError("VOD data not available".to_string()))?;
+
         Ok(VODDetail {
             id: data.title_no.to_string(),
             title: data.full_title,
             channel_id: data.bj_id,
             broad_start: data.broad_start,
-            files: data.files.into_iter().map(|file| VODFile {
-                id: file.idx,
-                order: file.file_order,
-                file_key: file.file_info_key,
-                file_start: file.file_start,
-                chat: file.chat,
-                duration: file.duration,
-            }).collect(),
+            files: data
+                .files
+                .into_iter()
+                .map(|file| VODFile {
+                    id: file.idx,
+                    order: file.file_order,
+                    file_key: file.file_info_key,
+                    file_start: file.file_start,
+                    chat: file.chat,
+                    duration: file.duration,
+                })
+                .collect(),
         })
     }
 }
@@ -211,7 +221,7 @@ pub struct RawVOD {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct RawVODUcc {
-    thumb: String,
+    thumb: Option<String>,
     total_file_duration: u64,
 }
 
@@ -241,11 +251,11 @@ pub struct RawVODDetailFile {
 }
 
 pub fn parse_soop_timestamp(timestamp: &str) -> DateTime<Utc> {
-    let mut date =  chrono::NaiveDateTime::parse_from_str(timestamp, "%Y-%m-%d %H:%M:%S")
+    let mut date = chrono::NaiveDateTime::parse_from_str(timestamp, "%Y-%m-%d %H:%M:%S")
         .map_err(|e| anyhow::anyhow!("Failed to parse: {}", e))
         .unwrap()
         .and_utc();
-            
+
     date = date - chrono::Duration::hours(9);
     date
 }
