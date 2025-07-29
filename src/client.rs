@@ -2,8 +2,7 @@ use crate::chat::events::Event;
 use crate::constants::{EMOTICON_API_URL, PLAYER_LIVE_API_URL};
 use crate::error::{Error, Result};
 use crate::models::{
-    LiveDetail, LiveDetailToCheck, RawLiveDetail, RawStation, RawVODDetailResponse, RawVODResponse,
-    SignatureEmoticonData, SignatureEmoticonResponse, Station, VOD, VODDetail, VODFile,
+    parse_soop_timestamp, LiveDetail, LiveDetailToCheck, RawLiveDetail, RawStation, RawVODDetailResponse, RawVODResponse, SignatureEmoticonData, SignatureEmoticonResponse, Station, VODDetail, VODFile, VOD
 };
 use crate::vod_chat_parser::parse_vod_chat_xml_with_start_time;
 use reqwest::{Client, Response};
@@ -70,13 +69,13 @@ impl SoopHttpClient {
             return Err(Error::Request(response.error_for_status().unwrap_err()));
         }
 
-        let station_response = response.json::<RawStation>().await?;
+        let raw = response.json::<RawStation>().await?;
 
         return Ok(Station {
-            broad_start: station_response.station.broad_start,
-            is_password: station_response.broad.is_password,
-            viewer_count: station_response.broad.viewer_count,
-            title: station_response.broad.title,
+            broad_start: parse_soop_timestamp(&raw.station.broad_start),
+            is_password: raw.broad.is_password,
+            viewer_count: raw.broad.viewer_count,
+            title: raw.broad.title,
         });
     }
 
@@ -191,6 +190,7 @@ impl SoopHttpClient {
     ) -> Result<Vec<Event>> {
         let duration_seconds = file.duration / 1_000_000; // 마이크로초를 초로 변환
         let mut all_events = Vec::new();
+        // ! 파일 시작점과 chunk size 계산 필요
         let mut current_time = 0;
 
         while current_time < duration_seconds {
@@ -221,20 +221,8 @@ impl SoopHttpClient {
         let vod_detail = self.get_vod_detail(vod_id).await?;
         let mut all_events = Vec::new();
 
-        println!(
-            "VOD '{}' 전체 채팅 수집 시작... ({} 파일)",
-            vod_detail.title,
-            vod_detail.files.len()
-        );
 
-        for (i, file) in vod_detail.files.iter().enumerate() {
-            println!(
-                "파일 {}/{} 처리 중... (재생시간: {}분)",
-                i + 1,
-                vod_detail.files.len(),
-                file.duration / 1_000_000 / 60
-            );
-
+        for (_, file) in vod_detail.files.iter().enumerate() {
             let mut file_events = self
                 .get_file_chat_events(file, &vod_detail.broad_start, 300)
                 .await?; // 5분 간격

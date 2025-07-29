@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_this_or_that::{as_bool, as_u64};
 use crate::error::Result;
@@ -57,12 +58,14 @@ impl RawVODResponse {
         self.data
             .into_iter()
             .filter(|vod| vod.auth_no == 101)
-            .map(|vod| VOD {
-                id: vod.title_no,
-                title: vod.title_name,
-                thumbnail_url: format!("https:{}", vod.ucc.thumb),
-                duration: vod.ucc.total_file_duration,
-            })
+            .map(|vod| {
+                VOD {
+                    id: vod.title_no,
+                    title: vod.title_name,
+                    thumbnail_url: format!("https:{}", vod.ucc.thumb),
+                    duration: vod.ucc.total_file_duration,
+                    reg_date: parse_soop_timestamp(&vod.reg_date),
+                }})
             .collect()
     }
 }
@@ -110,7 +113,7 @@ pub struct RawStation {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Station {
-    pub broad_start: String,
+    pub broad_start: DateTime<Utc>,
     pub is_password: bool,
     pub viewer_count: u64,
     pub title: String,
@@ -162,14 +165,17 @@ pub struct Emoticon {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VOD {
     pub id: u64,
     pub title: String,
     pub thumbnail_url: String,
     pub duration: u64,
+    pub reg_date: DateTime<Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VODDetail {
     pub id: String,
     pub title: String,
@@ -179,6 +185,7 @@ pub struct VODDetail {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VODFile {
     pub id: u64,
     pub order: u32,
@@ -198,6 +205,7 @@ pub struct RawVOD {
     title_no: u64,
     title_name: String,
     auth_no: u32,
+    reg_date: String,
     ucc: RawVODUcc,
 }
 
@@ -230,4 +238,14 @@ pub struct RawVODDetailFile {
     file_start: String,
     chat: String,
     duration: u64,
+}
+
+pub fn parse_soop_timestamp(timestamp: &str) -> DateTime<Utc> {
+    let mut date =  chrono::NaiveDateTime::parse_from_str(timestamp, "%Y-%m-%d %H:%M:%S")
+        .map_err(|e| anyhow::anyhow!("Failed to parse: {}", e))
+        .unwrap()
+        .and_utc();
+            
+    date = date - chrono::Duration::hours(9);
+    date
 }
