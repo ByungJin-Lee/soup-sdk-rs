@@ -50,6 +50,16 @@ pub enum DonationType {
     VODBalloon,
 }
 
+/**
+ * 구독, 퀵뷰, OGQ 선물 종류
+ */
+#[derive(Debug, Serialize, Clone, Deserialize)]
+pub enum GiftType {
+    Subscription,
+    OGQ,
+    QuickView,
+}
+
 #[derive(Debug, Serialize, Clone, Deserialize)]
 pub enum MissionType {
     Battle,

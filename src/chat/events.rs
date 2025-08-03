@@ -11,7 +11,7 @@ where
 
 use crate::chat::{
     constants::message_codes::MessageCode,
-    types::{ChatType, DonationType, Emoticon, MissionType, User},
+    types::{ChatType, DonationType, Emoticon, GiftType, MissionType, User},
 };
 
 // --- 채팅 이벤트 ---
@@ -40,6 +40,10 @@ pub enum Event {
     Kick(UserEvent),
     // 강제 퇴장 취소,
     KickCancel(SimplifiedUserEvent),
+    // Sticker,
+    Sticker(StickerEvent),
+    // Gift
+    Gift(GiftEvent),
     // 시청자가 Mute 당한 경우
     Mute(MuteEvent),
     // 시청자가 블랙 당한경우,
@@ -98,6 +102,20 @@ pub struct ChatEvent {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct GiftEvent {
+    /// 공통 속성 영역
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub gift_type: GiftType,
+    pub sender_id: String,
+    pub sender_label: String,
+    pub receiver_id: String,
+    pub receiver_label: String,
+    pub gift_code: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DonationEvent {
     #[serde(flatten)]
     pub meta: EventMeta,
@@ -107,6 +125,17 @@ pub struct DonationEvent {
     pub fan_club_ordinal: u32, // 팬클럽 순번
     pub become_top_fan: bool,
     pub donation_type: DonationType,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StickerEvent {
+    #[serde(flatten)]
+    pub meta: EventMeta,
+    pub from: String,
+    pub from_label: String,
+    pub amount: u32,            // 스티커 갯수 금액
+    pub supporter_ordinal: u32, // 서포터 순번
 }
 
 #[derive(Debug, Clone, Serialize)]

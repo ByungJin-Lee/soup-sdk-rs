@@ -31,6 +31,9 @@ pub mod message_codes {
     pub const NOTIFICATION: MessageCode = 104;
     pub const EMOTICON: MessageCode = 109;
     pub const USER_JOIN: MessageCode = 127;
+    // sticker
+    pub const STICKER: MessageCode = 20;
+    pub const SUB_STICKER: MessageCode = 34;
     // balloon
     pub const DONATION: MessageCode = 18;
     pub const SUB_DONATION: MessageCode = 33;
@@ -43,6 +46,10 @@ pub mod message_codes {
     pub const VIDEO_DONATION: MessageCode = 105;
     // battle & mission
     pub const MISSION_DONATION: MessageCode = 121;
+    // gift
+    pub const SUBSCRIPTION_GIFTED: MessageCode = 108;
+    pub const QUICKVIEW_GIFTED: MessageCode = 45;
+    pub const OGQ_GIFTED: MessageCode = 118;
 }
 
 pub mod chat_message_fields {

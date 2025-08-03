@@ -6,7 +6,7 @@ use crate::{
     chat::{
         Event,
         commands::{Command, MessageType},
-        constants::message_codes,
+        constants::message_codes::{self},
         events::{
             BattleMissionResultEvent, ChallengeMissionResultEvent, MissionEvent, MissionTotalEvent,
         },
@@ -21,6 +21,7 @@ use crate::{
             emoticon::parse_emoticon_event,
             exit::parse_exit_event,
             freeze::parse_freeze_event,
+            gift::{parse_ogq_gift_event, parse_quickview_gift_event, parse_subscribe_gift_event},
             join::parse_join_event,
             kick::parse_kick_cancel_event,
             mission::parse_mission_event,
@@ -28,6 +29,7 @@ use crate::{
             notification::parse_notification_event,
             raw::{RawMessage, parse_message},
             slow::parse_slow_event,
+            sticker::{parse_sticker_event, parse_sticker_sub_event},
             subscribe::{parse_subscribe_event, parse_subscribe_renew_event},
         },
         types::MissionParser,
@@ -96,6 +98,12 @@ impl MessageHandler {
             message_codes::KICK_CANCEL => self.handle_kick_cancel(message),
             message_codes::SUBSCRIBE => self.handle_subscribe(message),
             message_codes::SUBSCRIBE_RENEW => self.handle_subscribe_renew(message),
+            // 스티커
+            message_codes::STICKER | message_codes::SUB_STICKER => self.handle_sticker(message),
+            // 선물
+            message_codes::OGQ_GIFTED
+            | message_codes::QUICKVIEW_GIFTED
+            | message_codes::SUBSCRIPTION_GIFTED => self.handle_gift(message),
             // 미션
             message_codes::MISSION_DONATION => self.handle_mission(message),
             // 도네이션
@@ -130,6 +138,27 @@ impl MessageHandler {
             _ => return None,
         };
         let _ = self.broadcast(Event::Donation(e));
+        None
+    }
+
+    fn handle_sticker(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let e = match message.code {
+            message_codes::STICKER => parse_sticker_event(message),
+            message_codes::SUB_STICKER => parse_sticker_sub_event(message),
+            _ => return None,
+        };
+        let _ = self.broadcast(Event::Sticker(e));
+        None
+    }
+
+    fn handle_gift(&self, message: RawMessage) -> Option<Vec<u8>> {
+        let e = match message.code {
+            message_codes::OGQ_GIFTED => parse_ogq_gift_event(message),
+            message_codes::SUBSCRIPTION_GIFTED => parse_subscribe_gift_event(message),
+            message_codes::QUICKVIEW_GIFTED => parse_quickview_gift_event(message),
+            _ => return None,
+        };
+        let _ = self.broadcast(Event::Gift(e));
         None
     }
 
