@@ -40,6 +40,7 @@ struct ConnectionLoopState {
     event_tx: broadcast::Sender<Event>,
     connection_url: String,
     live_detail: LiveDetail,
+    password: String,
 }
 
 impl SoopChatConnection {
@@ -113,6 +114,7 @@ impl SoopChatConnection {
                 event_tx: self.event_tx.clone(),
                 connection_url,
                 live_detail,
+                password: self.options.password.clone(),
             };
             // 백그라운드 스레드 실행
             tokio::spawn(run_connection_loop(loop_state));
@@ -183,7 +185,7 @@ async fn try_connect_and_run_session(state: &mut ConnectionLoopState) -> Result<
     let (mut writer, mut reader) = ws_stream.split();
 
     // Formatter 인스턴스 생성
-    let formatter = ChatFormatter::new(state.live_detail.clone());
+    let formatter = ChatFormatter::new(state.live_detail.clone(), state.password.clone());
 
     // 4. 초기 패킷 전송 (CONNECT)
     let connect_packet = formatter.format_message(MessageType::Connect);

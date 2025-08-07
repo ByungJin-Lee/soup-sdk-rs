@@ -1,20 +1,24 @@
 use std::sync::Arc;
 
-use soup_sdk::{SoopHttpClient, chat::Event};
+use soup_sdk::{
+    SoopHttpClient,
+    chat::{Event, SoopChatConnection, SoopChatOptions, commands::MessageType},
+};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // --- VOD API 테스트 ---
     let soop_client = Arc::new(SoopHttpClient::new());
 
-    let data = soop_client.get_vod_list("beemong", 1).await?;
+    let data = soop_client.get_live_detail_state("danchu17").await?;
     println!("{:?}", data);
 
     // let streamer_id = "jingburger1";
 
-    // let options = SoopChatOptions {
-    //     streamer_id: "cotton1217".to_string(),
-    // };
+    let options = SoopChatOptions {
+        streamer_id: "inehine".to_string(),
+        password: "".to_string(),
+    };
 
     // let (_, ooo) = soop_client
     //     .get_live_detail_state(&options.streamer_id)
@@ -22,34 +26,34 @@ async fn main() -> anyhow::Result<()> {
 
     // println!("{:?}", ooo);
 
-    // // --- 2. 초기화 (생성) ---
-    // // 이 시점에서는 아무런 네트워크 활동도 일어나지 않습니다.
-    // println!("[System] Chat connection object created and initialized.");
-    // let chat_connection = SoopChatConnection::new(Arc::clone(&soop_client), options)?;
+    // --- 2. 초기화 (생성) ---
+    // 이 시점에서는 아무런 네트워크 활동도 일어나지 않습니다.
+    println!("[System] Chat connection object created and initialized.");
+    let chat_connection = SoopChatConnection::new(Arc::clone(&soop_client), options)?;
 
-    // // --- 3. 이벤트 구독 준비 ---
-    // // start()를 호출하기 전에도 구독은 가능합니다.
-    // let mut event_receiver = chat_connection.subscribe();
-    // println!("[System] Subscribed to event channel.");
+    // --- 3. 이벤트 구독 준비 ---
+    // start()를 호출하기 전에도 구독은 가능합니다.
+    let mut event_receiver = chat_connection.subscribe();
+    println!("[System] Subscribed to event channel.");
 
-    // // --- 4. 동작 시작 ---
-    // // start()를 호출하는 순간, 백그라운드에서 연결 시도가 시작됩니다.
-    // if let Err(e) = chat_connection.start().await {
-    //     eprintln!("[Error] Failed to start a connection loop: {}", e);
-    //     return Ok(());
-    // }
-    // println!("[System] Connection loop started. Waiting for events...");
+    // --- 4. 동작 시작 ---
+    // start()를 호출하는 순간, 백그라운드에서 연결 시도가 시작됩니다.
+    if let Err(e) = chat_connection.start().await {
+        eprintln!("[Error] Failed to start a connection loop: {}", e);
+        return Ok(());
+    }
+    println!("[System] Connection loop started. Waiting for events...");
 
-    // // --- 5. 메인 이벤트 루프 ---
-    // // 이제부터 이벤트를 수신하고 처리합니다.
-    // loop {
-    //     match event_receiver.recv().await {
-    //         Ok(event) => handle_event(event),
-    //         Err(_) => {
-    //             break;
-    //         }
-    //     }
-    // }
+    // --- 5. 메인 이벤트 루프 ---
+    // 이제부터 이벤트를 수신하고 처리합니다.
+    loop {
+        match event_receiver.recv().await {
+            Ok(event) => handle_event(event),
+            Err(_) => {
+                break;
+            }
+        }
+    }
 
     Ok(())
 }
@@ -103,6 +107,9 @@ fn handle_event(event: Event) {
         }
         // Event::Exit(v) => {
         //     println!("E {}", v.user.id)
+        // }
+        // Event::Raw(e) => {
+        //     println!("raw {:#x?}", e)
         // }
         _ => {
             // println!("[Incoming] {:?}", event);

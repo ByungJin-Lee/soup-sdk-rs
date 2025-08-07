@@ -1,7 +1,7 @@
 use crate::{
     chat::{
         commands::MessageType,
-        constants::{SEPARATOR, SEPARATOR_3_TIMES, SEPARATOR_5_TIMES, STARTER_VEC},
+        constants::{ELEMENT_END, ELEMENT_START, SEPARATOR, SEPARATOR_3_TIMES, SPACE, STARTER_VEC},
     },
     models::LiveDetail,
 };
@@ -10,11 +10,15 @@ use crate::{
 #[derive(Debug, Clone)]
 pub struct ChatFormatter {
     pub live_detail: LiveDetail,
+    pub password: String,
 }
 
 impl ChatFormatter {
-    pub fn new(live_detail: LiveDetail) -> Self {
-        Self { live_detail }
+    pub fn new(live_detail: LiveDetail, password: String) -> Self {
+        Self {
+            live_detail,
+            password,
+        }
     }
 
     pub fn format_message(&self, message_type: MessageType) -> Vec<u8> {
@@ -23,6 +27,7 @@ impl ChatFormatter {
             MessageType::JOIN => self.format_join_packet(),
             _ => "".to_string(), // 다른 메시지 코드에 대한 기본값
         };
+
         return bundle(message_type, payload.as_bytes());
     }
 
@@ -32,10 +37,8 @@ impl ChatFormatter {
 
     fn format_join_packet(&self) -> String {
         format!(
-            "{}{}{}",
-            SEPARATOR,
-            self.live_detail.ch_no,
-            SEPARATOR_5_TIMES
+            "\x0c{}\x0c\x0c0\x0c\x0clog\x11\x06&\x06set_bps\x06=\x068000\x06&\x06view_bps\x06=\x061000\x06&\x06quality\x06=\x06normal\x06&\x06uuid\x06=\x06\x06&\x06geo_cc\x06=\x06KR\x06&\x06geo_rc\x06=\x0626\x06&\x06acpt_lang\x06=\x06ko_KR\x06&\x06svc_lang\x06=\x06ko_KR\x06&\x06subscribe\x06=\x060\x06&\x06lowlatency\x06=\x060\x06&\x06mode\x06=\x06landing\x12pwd\x11{}\x12auth_info\x11NULL\x12pver\x112\x12access_system\x11html5\x12\x0c",
+            self.live_detail.ch_no, self.password
         )
     }
 }

@@ -9,6 +9,7 @@ pub const SPACE: char = '\x06';
 
 // --- 사전 계산된 SEPARATOR 패턴들 ---
 pub const SEPARATOR_3_TIMES: &str = "\x0c\x0c\x0c"; // SEPARATOR * 3
+pub const SEPARATOR_4_TIMES: &str = "\x0c\x0c\x0c\x0c"; // SEPARATOR * 4
 pub const SEPARATOR_5_TIMES: &str = "\x0c\x0c\x0c\x0c\x0c"; // SEPARATOR * 5
 
 // --- 채팅 명령 코드 ---
